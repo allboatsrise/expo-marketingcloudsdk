@@ -21,6 +21,13 @@
   "main": "build/MarketingCloudSdk.js",
   "types": "build/MarketingCloudSdk.d.ts",
   "sideEffects": false,
+  "files": [
+    "/build/**/*",
+    "/plugin/build/**/*",
+    "/app.plugin.js",
+    "/package.json",
+    "/README.md"
+  ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
