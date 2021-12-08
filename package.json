@@ -1,0 +1,46 @@
+{
+  "name": "@allboatsrise/expo-marketingcloudsdk",
+  "version": "0.0.1",
+  "description": "Expo module for Salesforce Marketing Cloud SDK",
+  "homepage": "https://github.com/allboatsrise/expo-marketingcloudsdk",
+  "keywords": [
+    "react-native",
+    "expo",
+    "ios",
+    "android",
+    "salesforce",
+    "mobilepush",
+    "marketingcloud",
+    "marketingcloudsdk"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-notifications"
+  },
+  "main": "build/MarketingCloudSdk.js",
+  "types": "build/MarketingCloudSdk.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "dependencies": {
+    "@expo/config-plugins": "^4.0.2"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react-native-marketingcloudsdk": "^7.4.3"
+  }
+}
