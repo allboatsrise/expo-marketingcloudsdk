@@ -15,8 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-notifications"
+    "url": "https://github.com/allboatsrise/expo-marketingcloudsdk.git"
   },
   "main": "build/MarketingCloudSdk.js",
   "types": "build/MarketingCloudSdk.d.ts",
