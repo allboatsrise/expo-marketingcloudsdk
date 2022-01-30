@@ -7337,6 +7337,11 @@ react-is@^17.0.1, react-is@^17.0.2:
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-marketingcloudsdk@^7.4.3:
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/react-native-marketingcloudsdk/-/react-native-marketingcloudsdk-7.4.3.tgz#83703b29a5f7bfb1f887583944b49624cd733e4c"
+  integrity sha512-lZrno1FHHqlaRHFqeJAZhDcWjbb5/4fL6I51l2uz8zR05vQKBE7aicbYu5cO2pVqtsB+ZhEIQQCUvXUXy12aNg==
+
 react-refresh@^0.4.0:
   version "0.4.3"
   resolved "https://registry.npmjs.org/react-refresh/-/react-refresh-0.4.3.tgz"
