@@ -17,8 +17,8 @@
     "type": "git",
     "url": "https://github.com/allboatsrise/expo-marketingcloudsdk.git"
   },
-  "main": "build/MarketingCloudSdk.js",
-  "types": "build/MarketingCloudSdk.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "sideEffects": false,
   "files": [
     "/build/**/*",
@@ -47,8 +47,8 @@
     "react-native-marketingcloudsdk": "^7.4.3"
   },
   "peerDependencies": {
-    "expo": "*",
     "@expo/config-plugins": "^4.0.0",
+    "expo": "*",
     "react-native-marketingcloudsdk": "^7.4.3"
   }
 }

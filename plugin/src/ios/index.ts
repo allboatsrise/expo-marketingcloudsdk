@@ -3,9 +3,9 @@ import {
   withInfoPlist,
 } from '@expo/config-plugins';
 
-import { MarketingCloudSdkPluginProps } from './types';
+import { MarketingCloudSdkPluginProps } from '../types';
 
-export const withMarketingCloudSdkIOS: ConfigPlugin<MarketingCloudSdkPluginProps> = (
+export const withIOSConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (
   config,
   props
 ) => {

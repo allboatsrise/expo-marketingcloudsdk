@@ -1,10 +1,9 @@
+import fs from 'fs';
+import path from 'path';
 import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
 import { MarketingCloudSdkPluginProps } from './types';
-
-import { withMarketingCloudSdkAndroid } from './withMarketingCloudSdkAndroid';
-import { withMarketingCloudSdkIOS } from './withMarketingCloudSdkIOS';
-
-const pkg = require('@allboatsrise/expo-marketingcloudsdk/package.json');
+import { withAndroidConfig } from './android';
+import { withIOSConfig } from './ios';
 
 const ERROR_PREFIX = 'Marketing Cloud SDK Plugin:';
 
@@ -25,9 +24,10 @@ const withMarketingCloudSdk: ConfigPlugin<Partial<MarketingCloudSdkPluginProps> 
     throw new Error(`${ERROR_PREFIX} Must provide access token.`);
   }
 
-  config = withMarketingCloudSdkAndroid(config, {...props, serverUrl, appId, accessToken});
-  config = withMarketingCloudSdkIOS(config, {...props, serverUrl, appId, accessToken});
+  config = withAndroidConfig(config, {...props, serverUrl, appId, accessToken});
+  config = withIOSConfig(config, {...props, serverUrl, appId, accessToken});
   return config;
 };
 
+const pkg = JSON.parse(fs.readFileSync(path.join(path.dirname(path.dirname(__dirname)), 'package.json'), 'utf8'));
 export default createRunOncePlugin(withMarketingCloudSdk, pkg.name, pkg.version);
