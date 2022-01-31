@@ -70,6 +70,7 @@ const withConfigureMainApplication: ConfigPlugin<MarketingCloudSdkPluginProps> =
 import com.salesforce.marketingcloud.MarketingCloudConfig;
 import com.salesforce.marketingcloud.MarketingCloudSdk;
 import com.salesforce.marketingcloud.notifications.NotificationCustomizationOptions;
+import android.util.Log;
       `.trim(),
       anchor: /public class MainApplication/,
       offset: 0,
