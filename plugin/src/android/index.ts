@@ -1,5 +1,6 @@
 import fs from 'fs'
-import { ConfigPlugin, withAppBuildGradle, withMainApplication, withProjectBuildGradle} from '@expo/config-plugins';
+import path from 'path'
+import { ConfigPlugin, withAppBuildGradle, withDangerousMod, withMainApplication, withProjectBuildGradle} from '@expo/config-plugins';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { MarketingCloudSdkPluginProps } from '../types';
 import { getGoogleServicesFilePath } from './helpers';
@@ -13,14 +14,15 @@ export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (co
   // @see https://stackoverflow.com/a/63109187
 
   // 3. Configure the SDK in your MainApplication.java class
-  config = withConfigureMainApplication(config, {...props})
+  config = withConfigureMainApplication(config, props)
+  config = withNotificationIconFile(config, props)
 
   return config;
 };
 
 const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (config) => {
   config = withProjectBuildGradle(config, async config => {
-    
+
     config.modResults.contents = mergeContents({
       src: config.modResults.contents,
       newSrc: `        maven { url "https://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android/repository" }`,
@@ -64,6 +66,19 @@ const withConfigureMainApplication: ConfigPlugin<MarketingCloudSdkPluginProps> =
 
     config.modResults.contents = mergeContents({
       src: config.modResults.contents,
+      newSrc: `
+import com.salesforce.marketingcloud.MarketingCloudConfig;
+import com.salesforce.marketingcloud.MarketingCloudSdk;
+import com.salesforce.marketingcloud.notifications.NotificationCustomizationOptions;
+      `.trim(),
+      anchor: /public class MainApplication/,
+      offset: 0,
+      tag: '@allboatsrise/expo-marketingcloudsdk(header)',
+      comment: '//'
+    }).contents
+
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
       newSrc: `    MarketingCloudSdk.init(this,
       MarketingCloudConfig.builder()
         .setApplicationId(${JSON.stringify(props.appId)})
@@ -84,3 +99,25 @@ const withConfigureMainApplication: ConfigPlugin<MarketingCloudSdkPluginProps> =
     return config;
   })
 }
+
+ export const withNotificationIconFile: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+  return withDangerousMod(config, [
+    'android',
+    async config => {
+      if (!props.iconFile) {
+        throw new Error(`Must set iconFile property.`)
+      }
+
+      const completeIconPath = path.resolve(config.modRequest.projectRoot, props.iconFile);
+      if (!fs.existsSync(completeIconPath)) {
+        throw new Error(`File not found at ${completeIconPath}`)
+      }
+
+      const targetPath = path.join(config.modRequest.platformProjectRoot, 'app', 'src', 'main', 'res', 'drawable', 'ic_notification.png')
+
+      fs.copyFileSync(completeIconPath, targetPath);
+
+      return config;
+    },
+  ]);
+};
