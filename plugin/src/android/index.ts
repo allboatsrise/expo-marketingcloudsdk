@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { ConfigPlugin, withAppBuildGradle, withMainApplication} from '@expo/config-plugins';
+import { ConfigPlugin, withAppBuildGradle, withMainApplication, withProjectBuildGradle} from '@expo/config-plugins';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { MarketingCloudSdkPluginProps } from '../types';
 import { getGoogleServicesFilePath } from './helpers';
@@ -19,6 +19,20 @@ export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (co
 };
 
 const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (config) => {
+  config = withProjectBuildGradle(config, async config => {
+    
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      newSrc: `        maven { url "https://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android/repository" }`,
+      anchor: /mavenLocal\(\)/,
+      offset: 1,
+      tag: '@allboatsrise/expo-marketingcloudsdk(maven:repositories)',
+      comment: '//'
+    }).contents
+    
+    return config
+  })
+
   return withAppBuildGradle(config, async config => {
     config.modResults.contents = mergeContents({
       src: config.modResults.contents,
