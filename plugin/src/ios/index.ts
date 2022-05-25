@@ -137,19 +137,29 @@ const withPushConfiguration: ConfigPlugin<MarketingCloudSdkPluginProps> = (confi
 
 const withDelegateImplementation: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
   return withAppDelegate(config, async config => {
+
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      newSrc: `    [[MarketingCloudSDK sharedInstance] sfmc_setDeviceToken:deviceToken];`,
+      anchor: /return \[super application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken\];/,
+      offset: 0,
+      tag: '@allboatsrise/expo-marketingcloudsdk(user-notification-method-didRegisterForRemoteNotificationsWithDeviceToken)',
+      comment: '//'
+    }).contents
+
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      newSrc: `os_log_debug(OS_LOG_DEFAULT, "didFailToRegisterForRemoteNotificationsWithError = %@", error);`,
+      anchor: /return \[super application:application didFailToRegisterForRemoteNotificationsWithError:error\];/,
+      offset: 0,
+      tag: '@allboatsrise/expo-marketingcloudsdk(user-notification-method-didFailToRegisterForRemoteNotificationsWithError)',
+      comment: '//'
+    }).contents
+
+
     config.modResults.contents = mergeContents({
       src: config.modResults.contents,
       newSrc: `
-- (void)application:(UIApplication *)application
-    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    [[MarketingCloudSDK sharedInstance] sfmc_setDeviceToken:deviceToken];
-}
-
-- (void)application:(UIApplication *)application
-    didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    os_log_debug(OS_LOG_DEFAULT, "didFailToRegisterForRemoteNotificationsWithError = %@", error);
-}
-
 // The method will be called on the delegate when the user responded to the notification by opening
 // the application, dismissing the notification or choosing a UNNotificationAction. The delegate
 // must be set before the application returns from applicationDidFinishLaunching:.
@@ -171,20 +181,24 @@ const withDelegateImplementation: ConfigPlugin<MarketingCloudSdkPluginProps> = (
     NSLog(@"User Info : %@", notification.request.content.userInfo);
     completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
                       UNAuthorizationOptionBadge);
-}
-
-// This method is REQUIRED for correct functionality of the SDK.
-// This method will be called on the delegate when the application receives a silent push
-- (void)application:(UIApplication *)application
-    didReceiveRemoteNotification:(NSDictionary *)userInfo
-          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    [[MarketingCloudSDK sharedInstance] sfmc_setNotificationUserInfo:userInfo];
-
-    completionHandler(UIBackgroundFetchResultNewData);
 }`.trim(),
       anchor: /-\s*\(BOOL\)application:\(UIApplication\s*\*\)application\s*didFinishLaunchingWithOptions/,
       offset: -1,
       tag: '@allboatsrise/expo-marketingcloudsdk(user-notification-methods)',
+      comment: '//'
+    }).contents
+
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      newSrc: `
+    // This method is REQUIRED for correct functionality of the SDK.
+    // This method will be called on the delegate when the application receives a silent push
+    [[MarketingCloudSDK sharedInstance] sfmc_setNotificationUserInfo:userInfo];
+    completionHandler(UIBackgroundFetchResultNewData);
+`,
+      anchor: /return \[super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler\]/,
+      offset: 0,
+      tag: '@allboatsrise/expo-marketingcloudsdk(user-notification-method-didReceiveRemoteNotification)',
       comment: '//'
     }).contents
 
