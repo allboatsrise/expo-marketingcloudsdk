@@ -1,6 +1,5 @@
 import {
   ConfigPlugin,
-  withEntitlementsPlist,
   withInfoPlist,
 } from '@expo/config-plugins';
 
@@ -10,19 +9,11 @@ export const withIOSConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (
   config,
   props
 ) => {
-  config = withEntitlements(config, props)
   config = withInfo(config, props)
   config = withRemoteNotificationsBackgroundMode(config, props)
 
   return config;
 };
-
-const withEntitlements: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, {mode = 'development'}) => {
-  return withEntitlementsPlist(config, async (config) => {
-    config.modResults['aps-environment'] = mode;
-    return config;
-  });
-}
 
 const withInfo: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
   return withInfoPlist(config, (config) => {

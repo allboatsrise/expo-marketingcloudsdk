@@ -20,9 +20,4 @@ export type MarketingCloudSdkPluginProps = {
   // inboxEnabled?: boolean;
   // locationEnabled?: boolean;
   analyticsEnabled?: boolean;
-  /**
-   * (iOS only) Environment of the app: either 'development' or 'production'. Defaults to 'development'.
-   * @default 'development'
-   */
-  mode?: 'development' | 'production';
 };

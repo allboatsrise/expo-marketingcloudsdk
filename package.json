@@ -53,6 +53,7 @@
   "peerDependencies": {
     "@expo/config-plugins": "^5.0.0",
     "expo": "*",
+    "expo-notifications": "^0.16.1",
     "react-native-marketingcloudsdk": "^7.5.1"
   }
 }
