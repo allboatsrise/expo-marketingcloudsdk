@@ -37,31 +37,10 @@ EX_REGISTER_SINGLETON_MODULE(MarketingCloud);
   NSError *error = nil;
   BOOL success = [[MarketingCloudSDK sharedInstance] sfmc_configureWithDictionary:[mcsdkBuilder sfmc_build] error:&error];
 
-  if (success == YES) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          // set the UNUserNotificationCenter delegate - the delegate must be set here in
-          // didFinishLaunchingWithOptions
-          [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-          [[UIApplication sharedApplication] registerForRemoteNotifications];
-
-          [[UNUserNotificationCenter currentNotificationCenter]
-              requestAuthorizationWithOptions:UNAuthorizationOptionAlert |
-                                              UNAuthorizationOptionSound |
-                                              UNAuthorizationOptionBadge
-              completionHandler:^(BOOL granted, NSError *_Nullable error) {
-                if (error == nil) {
-                    if (granted == YES) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                                        });
-                    }
-                }
-              }];
-        });
-    } else {
-        //  MarketingCloudSDK sfmc_configure failed
-        os_log_debug(OS_LOG_DEFAULT, "MarketingCloudSDK sfmc_configure failed with error = %@",
-                     error);
-    }
+  if (success != YES) {
+    EXLogError(@"[expo-marketingcloudsdk] Failed to initialize instance. (error: %@)", error);
+  }
+  
   return YES;
 }
 
@@ -77,7 +56,6 @@ EX_REGISTER_SINGLETON_MODULE(MarketingCloud);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  NSLog(@"User Info : %@", notification.request.content.userInfo);
   completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
 }
 
