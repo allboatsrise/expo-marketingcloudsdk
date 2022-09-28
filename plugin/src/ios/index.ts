@@ -1,16 +1,10 @@
-import fs from 'fs'
-import path from 'path'
 import {
   ConfigPlugin,
-  withAppDelegate,
-  withDangerousMod,
   withEntitlementsPlist,
   withInfoPlist,
 } from '@expo/config-plugins';
 
 import { MarketingCloudSdkPluginProps } from '../types';
-import { getProjectName } from '@expo/config-plugins/build/ios/utils/Xcodeproj';
-import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 
 export const withIOSConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (
   config,
@@ -18,6 +12,7 @@ export const withIOSConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (
 ) => {
   config = withEntitlements(config, props)
   config = withInfo(config, props)
+  config = withRemoteNotificationsBackgroundMode(config, props)
 
   return config;
 };
@@ -37,4 +32,18 @@ const withInfo: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => 
     config.modResults.SFMCServerUrl = props.serverUrl
     return config
   })
+}
+
+const withRemoteNotificationsBackgroundMode: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+  config = withInfoPlist(config, (config) => {
+    if (!Array.isArray(config.modResults.UIBackgroundModes)) {
+      config.modResults.UIBackgroundModes = [];
+    }
+    if (!config.modResults.UIBackgroundModes.includes('remote-notification')) {
+      config.modResults.UIBackgroundModes.push('remote-notification');
+    }
+    return config;
+  });
+
+  return config;
 }
