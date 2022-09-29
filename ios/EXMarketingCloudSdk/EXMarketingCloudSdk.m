@@ -57,12 +57,6 @@ EX_REGISTER_SINGLETON_MODULE(MarketingCloud);
   return YES;
 }
 
-// MobilePush SDK: REQUIRED IMPLEMENTATION
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
-{
-  [[MarketingCloudSDK sharedInstance] sfmc_setDeviceToken:deviceToken];
-}
-
 //# pragma mark - EXNotificationsDelegate
 
 // MobilePush SDK: REQUIRED IMPLEMENTATION

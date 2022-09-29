@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXMarketingCloudSdk : EXSingletonModule <UIApplicationDelegate, EXModuleRegistryConsumer, EXNotificationsDelegate>
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions;
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 
 @end
 
