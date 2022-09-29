@@ -1,10 +1,11 @@
 #import <MarketingCloudSDK/MarketingCloudSDK.h>
 #import <EXMarketingCloudSdk/EXMarketingCloudSdk.h>
 #import <ExpoModulesCore/EXDefines.h>
+#import <EXNotifications/EXNotificationCenterDelegate.h>
 
 @interface EXMarketingCloudSdk ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
 
 @end
 
@@ -16,7 +17,7 @@ EX_REGISTER_SINGLETON_MODULE(MarketingCloud);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _moduleRegistry = moduleRegistry;
+  _notificationCenterDelegate = [moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
 }
 
 # pragma mark - UIApplicationDelegate
@@ -49,41 +50,28 @@ EX_REGISTER_SINGLETON_MODULE(MarketingCloud);
 
   if (success != YES) {
     EXLogError(@"[expo-marketingcloudsdk] Failed to initialize instance. (error: %@)", error);
+  } else {
+    [_notificationCenterDelegate addDelegate:self];
   }
   
   return YES;
 }
 
+// MobilePush SDK: REQUIRED IMPLEMENTATION
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+  [[MarketingCloudSDK sharedInstance] sfmc_setDeviceToken:deviceToken];
+}
+
+//# pragma mark - EXNotificationsDelegate
+
+// MobilePush SDK: REQUIRED IMPLEMENTATION
+/** This delegate method offers an opportunity for applications with the "remote-notification" background mode to fetch appropriate new data in response to an incoming remote notification. You should call the fetchCompletionHandler as soon as you're finished performing that operation, so the system can accurately estimate its power and data cost.
+ This method will be invoked even if the application was launched or resumed because of the remote notification. The respective delegate methods will be invoked first. Note that this behavior is in contrast to application:didReceiveRemoteNotification:, which is not called in those cases, and which will not be invoked if this method is implemented. **/
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-  // This method is REQUIRED for correct functionality of the SDK.
-  // This method will be called on the delegate when the application receives a silent push
   [[MarketingCloudSDK sharedInstance] sfmc_setNotificationUserInfo:userInfo];
   completionHandler(UIBackgroundFetchResultNewData);
-}
-
-# pragma mark - UNUserNotificationCenterDelegate
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
-{
-  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
-}
-
-// The method will be called on the delegate when the user responded to the notification by opening
-// the application, dismissing the notification or choosing a UNNotificationAction. The delegate
-// must be set before the application returns from applicationDidFinishLaunching:.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
-{
-  // tell the MarketingCloudSDK about the notification
-  [[MarketingCloudSDK sharedInstance] sfmc_setNotificationRequest:response.notification.request];
-
-  if (completionHandler != nil) {
-      completionHandler();
-  }
-}
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(UNNotification *)notification
-{
 }
 
 @end
