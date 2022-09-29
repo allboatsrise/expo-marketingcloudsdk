@@ -23,15 +23,25 @@ EX_REGISTER_SINGLETON_MODULE(MarketingCloud);
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions
 {
-  NSString *sfmcApplicationId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCApplicationId"];
   NSString *sfmcAccessToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCAccessToken"];
   NSNumber *sfmcAnalyticsEnabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCAnalyticsEnabled"];
+  NSString *sfmcAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCApplicationId"];
+  NSNumber *sfmcAppControlsBadging = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCApplicationControlsBadging"];
+  NSNumber *sfmcDelayRegistrationUntilContactKeyIsSet = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCDelayRegistrationUntilContactKeyIsSet"];
+  NSNumber *sfmcInboxEnabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCInboxEnabled"];
+  NSNumber *sfmcLocationEnabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCLocationEnabled"];
+  NSString *sfmcMid = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCMid"];
   NSString *sfmcServerUrl = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCServerUrl"];
 
   MarketingCloudSDKConfigBuilder *mcsdkBuilder = [MarketingCloudSDKConfigBuilder new];
-  [mcsdkBuilder sfmc_setApplicationId:sfmcApplicationId];
   [mcsdkBuilder sfmc_setAccessToken:sfmcAccessToken];
   [mcsdkBuilder sfmc_setAnalyticsEnabled:sfmcAnalyticsEnabled];
+  [mcsdkBuilder sfmc_setApplicationId:sfmcAppId];
+  [mcsdkBuilder sfmc_setApplicationControlsBadging:sfmcAppControlsBadging];
+  [mcsdkBuilder sfmc_setDelayRegistrationUntilContactKeyIsSet:sfmcDelayRegistrationUntilContactKeyIsSet];
+  [mcsdkBuilder sfmc_setInboxEnabled:sfmcInboxEnabled];
+  [mcsdkBuilder sfmc_setLocationEnabled:sfmcLocationEnabled];
+  if ([sfmcMid length] > 0) [mcsdkBuilder sfmc_setMid:sfmcMid];
   [mcsdkBuilder sfmc_setMarketingCloudServerUrl:sfmcServerUrl];
 
   NSError *error = nil;

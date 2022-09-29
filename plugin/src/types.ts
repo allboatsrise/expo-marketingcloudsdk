@@ -16,8 +16,34 @@ export type MarketingCloudSdkPluginProps = {
    * defined in `android.googleServicesFile` (google-services.json) if defined.
    */
   senderId?: string;
-  // mid?: string;
-  // inboxEnabled?: boolean;
-  // locationEnabled?: boolean;
+
+  /**
+   * Sets the configuration value to use for the Salesforce MarketingCloud Tenant Specific mid.
+   */
+  mid?: string;
+
+  /**
+   * Sets the configuration flag that enables or disables inbox services
+   */
+  inboxEnabled?: boolean
+
+  /**
+   * Sets the configuration flag that enables or disables location services
+   */
+  locationEnabled?: boolean;
+
+  /**
+   * Sets the configuration flag that enables or disables Salesforce MarketingCloud Analytics services
+   */
   analyticsEnabled?: boolean;
+
+  /**
+   * Sets the configuration value which enables or disables application control over badging
+   */
+  applicationControlsBadging?: boolean;
+
+  /**
+   * Sets the configuration value which enables or disables application control over delaying SDK registration until a contact key is set
+   */
+  delayRegistrationUntilContactKeyIsSet?: boolean;
 };

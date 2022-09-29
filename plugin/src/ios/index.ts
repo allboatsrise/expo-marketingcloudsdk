@@ -17,9 +17,14 @@ export const withIOSConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (
 
 const withInfo: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
   return withInfoPlist(config, (config) => {
-    config.modResults.SFMCApplicationId = props.appId
     config.modResults.SFMCAccessToken = props.accessToken
     config.modResults.SFMCAnalyticsEnabled = props.analyticsEnabled ?? false
+    config.modResults.SFMCApplicationId = props.appId
+    config.modResults.SFMCApplicationControlsBadging = props.applicationControlsBadging ?? false
+    config.modResults.SFMCDelayRegistrationUntilContactKeyIsSet = props.delayRegistrationUntilContactKeyIsSet ?? false
+    config.modResults.SFMCInboxEnabled = props.inboxEnabled ?? false
+    config.modResults.SFMCLocationEnabled = props.locationEnabled ?? false
+    config.modResults.SFMCMid = props.mid ?? ''
     config.modResults.SFMCServerUrl = props.serverUrl
     return config
   })
