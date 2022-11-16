@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@allboatsrise/react-native-marketingcloudsdk@^7.5.2":
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/@allboatsrise/react-native-marketingcloudsdk/-/react-native-marketingcloudsdk-7.5.2.tgz#6c3b83f032dfc3e4aa503a59a9df458ecdbb1958"
+  integrity sha512-5t/Ofqy5Za3ML+zHhhZIcE9LywGoLcgAyqcijdtTEwigLz2AxoLvsSbdxkbOh6+pwXkDceKQmNnnuBMUZsol4A==
+
 "@babel/cli@^7.1.2":
   version "7.16.0"
   resolved "https://registry.npmjs.org/@babel/cli/-/cli-7.16.0.tgz"
@@ -7335,11 +7340,6 @@ react-is@^17.0.1, react-is@^17.0.2:
   version "17.0.2"
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
-
-react-native-marketingcloudsdk@^7.5.1:
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/react-native-marketingcloudsdk/-/react-native-marketingcloudsdk-7.5.1.tgz#ecd31d55257c9c7ca11d49cddb967f3813580557"
-  integrity sha512-PPMHs/eCq9IjQALf3cvIOmIzPKrpAc3fjutiVmLnTL4R4ClmZ+cNPt5MkAHHmi41b3xR8JFpzBB0tQz+5Ocucg==
 
 react-refresh@^0.4.0:
   version "0.4.3"
