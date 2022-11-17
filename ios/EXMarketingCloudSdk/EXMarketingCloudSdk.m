@@ -32,27 +32,30 @@ EX_REGISTER_SINGLETON_MODULE(MarketingCloud);
   NSNumber *sfmcInboxEnabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCInboxEnabled"];
   NSNumber *sfmcLocationEnabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCLocationEnabled"];
   NSString *sfmcMid = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCMid"];
-  NSString *sfmcServerUrl = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCServerUrl"];
+  NSURL *sfmcServerUrl = [NSURL URLWithString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"SFMCServerUrl"]];
 
-  MarketingCloudSDKConfigBuilder *mcsdkBuilder = [MarketingCloudSDKConfigBuilder new];
-  [mcsdkBuilder sfmc_setAccessToken:sfmcAccessToken];
-  [mcsdkBuilder sfmc_setAnalyticsEnabled:sfmcAnalyticsEnabled];
-  [mcsdkBuilder sfmc_setApplicationId:sfmcAppId];
-  [mcsdkBuilder sfmc_setApplicationControlsBadging:sfmcAppControlsBadging];
-  [mcsdkBuilder sfmc_setDelayRegistrationUntilContactKeyIsSet:sfmcDelayRegistrationUntilContactKeyIsSet];
-  [mcsdkBuilder sfmc_setInboxEnabled:sfmcInboxEnabled];
-  [mcsdkBuilder sfmc_setLocationEnabled:sfmcLocationEnabled];
-  if ([sfmcMid length] > 0) [mcsdkBuilder sfmc_setMid:sfmcMid];
-  [mcsdkBuilder sfmc_setMarketingCloudServerUrl:sfmcServerUrl];
-
-  NSError *error = nil;
-  BOOL success = [[MarketingCloudSDK sharedInstance] sfmc_configureWithDictionary:[mcsdkBuilder sfmc_build] error:&error];
-
-  if (success != YES) {
-    EXLogError(@"[expo-marketingcloudsdk] Failed to initialize instance. (error: %@)", error);
-  } else {
-    [_notificationCenterDelegate addDelegate:self];
+  PushConfigBuilder *pushConfigBuilder = [[[[[[[[[PushConfigBuilder alloc] initWithAppId:sfmcAppId]
+                                                  setAccessToken:sfmcAccessToken]
+                                                 setAnalyticsEnabled:sfmcAnalyticsEnabled]
+                                                setApplicationControlsBadging:sfmcAppControlsBadging]
+                                               setDelayRegistrationUntilContactKeyIsSet:sfmcDelayRegistrationUntilContactKeyIsSet]
+                                              setInboxEnabled:sfmcInboxEnabled]
+                                             setLocationEnabled:sfmcLocationEnabled]
+                                            setMarketingCloudServerUrl:sfmcServerUrl];
+  
+  if ([sfmcMid length] > 0) {
+    pushConfigBuilder = [pushConfigBuilder setMid:sfmcMid];
   }
+  
+  [SFMCSdk initializeSdk:[[[SFMCSdkConfigBuilder new] setPushWithConfig:[pushConfigBuilder build] onCompletion:^(SFMCSdkOperationResult result) {
+    if (result != SFMCSdkOperationResultSuccess) {
+      EXLogError(@"[expo-marketingcloudsdk] Failed to initialize instance. (error: %d)", result);
+    } else {
+      [self->_notificationCenterDelegate addDelegate:self];
+    }
+  }] build]];
+  
+  
   
   return YES;
 }
@@ -64,7 +67,7 @@ EX_REGISTER_SINGLETON_MODULE(MarketingCloud);
  This method will be invoked even if the application was launched or resumed because of the remote notification. The respective delegate methods will be invoked first. Note that this behavior is in contrast to application:didReceiveRemoteNotification:, which is not called in those cases, and which will not be invoked if this method is implemented. **/
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-  [[MarketingCloudSDK sharedInstance] sfmc_setNotificationUserInfo:userInfo];
+  [[MobilePushSDK sharedInstance] sfmc_setNotificationUserInfo:userInfo];
   completionHandler(UIBackgroundFetchResultNewData);
 }
 
