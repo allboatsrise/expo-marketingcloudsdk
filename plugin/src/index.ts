@@ -1,28 +1,21 @@
 import fs from 'fs';
 import path from 'path';
 import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
-import { MarketingCloudSdkPluginProps } from './types';
+import { MarketingCloudSdkPluginProps, MarketingCloudSDKPluginPropsSchema } from './types';
 import { withAndroidConfig } from './android';
 import { withIOSConfig } from './ios';
 
-const ERROR_PREFIX = 'Marketing Cloud SDK Plugin:';
+const ERROR_PREFIX = 'Expo Marketing Cloud SDK Plugin:';
 
-const withMarketingCloudSdk: ConfigPlugin<Partial<MarketingCloudSdkPluginProps> | undefined> = (config, props) => {
-  if (!props) {
-    throw new Error(`${ERROR_PREFIX} Must configure plugin options.`);
+const withMarketingCloudSdk: ConfigPlugin<MarketingCloudSdkPluginProps | unknown> = (config, unsafeProps) => {
+  const result = MarketingCloudSDKPluginPropsSchema.safeParse(unsafeProps)
+
+  if (!result.success) {
+    throw new Error(`${ERROR_PREFIX} ${result.error.toString()}`);
   }
 
+  const props = result.data
   const {serverUrl, appId, accessToken} = props;
-
-  if (!serverUrl) {
-    throw new Error(`${ERROR_PREFIX} Must provide server url.`);
-  }
-  if (!appId) {
-    throw new Error(`${ERROR_PREFIX} Must provide app id.`);
-  }
-  if (!accessToken) {
-    throw new Error(`${ERROR_PREFIX} Must provide access token.`);
-  }
 
   config = withAndroidConfig(config, {...props, serverUrl, appId, accessToken});
   config = withIOSConfig(config, {...props, serverUrl, appId, accessToken});
