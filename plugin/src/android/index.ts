@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { ConfigPlugin, withAppBuildGradle, withDangerousMod, withMainApplication, withProjectBuildGradle} from '@expo/config-plugins';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
+import { AndroidConfig, withStringsXml } from 'expo/config-plugins'
 import { MarketingCloudSdkPluginProps } from '../types';
 import { getGoogleServicesFilePath } from './helpers';
 
@@ -14,6 +15,7 @@ export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (co
   // @see https://stackoverflow.com/a/63109187
 
   // 3. Configure the SDK in your MainApplication.java class
+  config = withConfiguration(config, props)
   config = withConfigureMainApplication(config, props)
   config = withNotificationIconFile(config, props)
 
@@ -47,6 +49,22 @@ const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (con
     
     return config
   })
+}
+
+const withConfiguration: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+    return withStringsXml(config, config => {
+      // Helper to add string.xml JSON items or overwrite existing items with the same name.
+      config.modResults = AndroidConfig.Strings.setStringItem(
+      [
+        // XML represented as JSON
+        // <string name="expo_marketingcloudsdk_value" translatable="false">value</string>
+        { $: { name: 'expo_marketingcloudsdk_value', translatable: 'false' }, _: 'some value123' },
+      ],
+      config.modResults
+    );
+    
+    return config;
+  });
 }
 
 const withConfigureMainApplication: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
