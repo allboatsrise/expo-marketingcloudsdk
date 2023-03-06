@@ -87,7 +87,8 @@ repositories {
 }
 
 dependencies {
-  implementation project(':expo-modules-core')
+  implementation project(":expo-modules-core")
+  implementation project(":expo-notifications")
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   api "com.salesforce.marketingcloud:marketingcloudsdk:8.0.6"
 }
