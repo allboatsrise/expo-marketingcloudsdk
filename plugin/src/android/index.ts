@@ -1,142 +1,47 @@
 import fs from 'fs'
-import path from 'path'
-import { ConfigPlugin, withAppBuildGradle, withDangerousMod, withMainApplication, withProjectBuildGradle} from '@expo/config-plugins';
-import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
-import { AndroidConfig, withStringsXml } from 'expo/config-plugins'
+import { ConfigPlugin, AndroidConfig, withStringsXml} from '@expo/config-plugins';
 import { MarketingCloudSdkPluginProps } from '../types';
 import { getGoogleServicesFilePath } from './helpers';
 
 export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
-  // 1. Add Marketing Cloud SDK repository
-  config = withConfigureRepository(config, props)
-
-  // 2. Provide FCM credentials
-  // Configure manually via Expo's googleServicesFile property.
-  // @see https://stackoverflow.com/a/63109187
-
-  // 3. Configure the SDK in your MainApplication.java class
+  // Set configuration on resources
   config = withConfiguration(config, props)
-  config = withConfigureMainApplication(config, props)
-  config = withNotificationIconFile(config, props)
 
   return config;
 };
 
-const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (config) => {
-  config = withProjectBuildGradle(config, async config => {
-
-    config.modResults.contents = mergeContents({
-      src: config.modResults.contents,
-      newSrc: `        maven { url "https://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android/repository" }`,
-      anchor: /mavenLocal\(\)/,
-      offset: 1,
-      tag: '@allboatsrise/expo-marketingcloudsdk(maven:repositories)',
-      comment: '//'
-    }).contents
-    
-    return config
-  })
-
-  return withAppBuildGradle(config, async config => {
-    config.modResults.contents = mergeContents({
-      src: config.modResults.contents,
-      newSrc: `    implementation 'com.salesforce.marketingcloud:marketingcloudsdk:8.0.6'`,
-      anchor: /dependencies\s?{/,
-      offset: 1,
-      tag: '@allboatsrise/expo-marketingcloudsdk(maven:dependencies)',
-      comment: '//'
-    }).contents
-    
-    return config
-  })
-}
-
 const withConfiguration: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
     return withStringsXml(config, config => {
+
+      let senderId = props.senderId
+  
+      if (!senderId) {
+        const googleServicesFilePath = getGoogleServicesFilePath(config, config.modRequest.projectRoot)
+        const googleServices = JSON.parse(fs.readFileSync(googleServicesFilePath, 'utf8'));
+        senderId = googleServices?.project_info?.project_number
+  
+        if (!senderId) {
+          throw new Error(`Failed to extract sender id from google services file. (path: ${googleServicesFilePath})`)
+        }
+      }
+
       // Helper to add string.xml JSON items or overwrite existing items with the same name.
       config.modResults = AndroidConfig.Strings.setStringItem(
-      [
-        // XML represented as JSON
-        // <string name="expo_marketingcloudsdk_value" translatable="false">value</string>
-        { $: { name: 'expo_marketingcloudsdk_value', translatable: 'false' }, _: 'some value123' },
-      ],
-      config.modResults
-    );
+        [
+          // XML represented as JSON
+          { $: { name: 'expo_marketingcloudsdk_app_id', translatable: 'false' }, _: props.appId },
+          { $: { name: 'expo_marketingcloudsdk_access_token', translatable: 'false' }, _: props.accessToken },
+          { $: { name: 'expo_marketingcloudsdk_server_url', translatable: 'false' }, _: props.serverUrl },
+          { $: { name: 'expo_marketingcloudsdk_sender_id', translatable: 'false' }, _: senderId },
+          { $: { name: 'expo_marketingcloudsdk_analytics_enabled', translatable: 'false' }, _: props.analyticsEnabled ? 'true' : 'false' },
+          { $: { name: 'expo_marketingcloudsdk_delay_registration_until_contact_key_is_set', translatable: 'false' }, _: props.delayRegistrationUntilContactKeyIsSet ? 'true' : 'false' },
+          { $: { name: 'expo_marketingcloudsdk_inbox_enabled', translatable: 'false' }, _: props.inboxEnabled ? 'true' : 'false' },
+          { $: { name: 'expo_marketingcloudsdk_mark_message_read_on_inbox_notification_open', translatable: 'false' }, _: props.markNotificationReadOnInboxNotificationOpen ? 'true' : 'false' },
+        ],
+        config.modResults
+      );
     
     return config;
   });
 }
 
-const withConfigureMainApplication: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
-  return withMainApplication(config, async config => {
-
-    let senderId = props.senderId
-
-    if (!senderId) {
-      const googleServicesFilePath = getGoogleServicesFilePath(config, config.modRequest.projectRoot)
-      const googleServices = JSON.parse(fs.readFileSync(googleServicesFilePath, 'utf8'));
-      senderId = googleServices?.project_info?.project_number
-
-      if (!senderId) {
-        throw new Error(`Failed to extract sender id from google services file. (path: ${googleServicesFilePath})`)
-      }
-    }
-
-    config.modResults.contents = mergeContents({
-      src: config.modResults.contents,
-      newSrc: `
-import com.salesforce.marketingcloud.MarketingCloudConfig;
-import com.salesforce.marketingcloud.MarketingCloudSdk;
-import com.salesforce.marketingcloud.notifications.NotificationCustomizationOptions;
-import android.util.Log;
-      `.trim(),
-      anchor: /public class MainApplication/,
-      offset: 0,
-      tag: '@allboatsrise/expo-marketingcloudsdk(header)',
-      comment: '//'
-    }).contents
-
-    config.modResults.contents = mergeContents({
-      src: config.modResults.contents,
-      newSrc: `    MarketingCloudSdk.init(this,
-      MarketingCloudConfig.builder()
-        .setApplicationId(${JSON.stringify(props.appId)})
-        .setAccessToken(${JSON.stringify(props.accessToken)})
-        .setSenderId(${JSON.stringify(senderId)})
-        .setMarketingCloudServerUrl(${JSON.stringify(props.serverUrl)})
-        .setNotificationCustomizationOptions(NotificationCustomizationOptions.create(R.drawable.ic_notification))
-        .setAnalyticsEnabled(${props.analyticsEnabled ? 'true' : 'false'})
-        .build(this),
-      initializationStatus -> Log.e("INIT", initializationStatus.toString())
-    );`,
-      anchor: /super\.onCreate\(\);/,
-      offset: 1,
-      tag: '@allboatsrise/expo-marketingcloudsdk(onCreate)',
-      comment: '//'
-    }).contents
-
-    return config;
-  })
-}
-
- export const withNotificationIconFile: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
-  return withDangerousMod(config, [
-    'android',
-    async config => {
-      if (!props.iconFile) {
-        throw new Error(`Must set iconFile property.`)
-      }
-
-      const completeIconPath = path.resolve(config.modRequest.projectRoot, props.iconFile);
-      if (!fs.existsSync(completeIconPath)) {
-        throw new Error(`File not found at ${completeIconPath}`)
-      }
-
-      const targetPath = path.join(config.modRequest.platformProjectRoot, 'app', 'src', 'main', 'res', 'drawable', 'ic_notification.png')
-
-      fs.copyFileSync(completeIconPath, targetPath);
-
-      return config;
-    },
-  ]);
-};

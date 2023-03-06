@@ -83,9 +83,11 @@ android {
 
 repositories {
   mavenCentral()
+  maven { url "https://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android/repository" }
 }
 
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  implementation "com.salesforce.marketingcloud:marketingcloudsdk:${safeExtGet("marketingCloudSdkVersion", "8.0.6")}"
 }

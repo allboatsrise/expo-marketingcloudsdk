@@ -13,13 +13,6 @@ export const MarketingCloudSDKPluginPropsSchema = z.object({
   serverUrl: z.string({required_error: 'Must provide server url.'}).min(1),
 
   /**
-   * (Android only) Local path to an image to use as the icon for push notifications.
-   * 96x96 all-white png with transparency. We recommend following
-   * [Google’s design guidelines](https://material.io/design/iconography/product-icons.html#design-principles).
-   */
-  iconFile: z.string().min(1).optional(),
-
-  /**
    * (Android only) Marketing Cloud FCM sender id. Defaults to `project_info.project_number`
    * defined in `android.googleServicesFile` (google-services.json) if defined.
    */
@@ -54,4 +47,6 @@ export const MarketingCloudSDKPluginPropsSchema = z.object({
    * Sets the configuration value which enables or disables application control over delaying SDK registration until a contact key is set
    */
   delayRegistrationUntilContactKeyIsSet: z.boolean().optional(),
+
+  markNotificationReadOnInboxNotificationOpen: z.boolean().optional(),
 }, {required_error: 'Must configure plugin options.'})
