@@ -15,11 +15,25 @@ export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (co
 };
 
 const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (config) => {
-  config = withProjectBuildGradle(config, async config => {
+  const version = '8.0.6'
 
+  config = withProjectBuildGradle(config, async config => {
     config.modResults.contents = mergeContents({
       src: config.modResults.contents,
-      newSrc: `        maven { url "https://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android/repository" }`,
+      newSrc: `        marketingCloudSdkVersion = '${version}'`,
+      anchor: /ext \{/,
+      offset: 1,
+      tag: '@allboatsrise/expo-marketingcloudsdk(project.ext)',
+      comment: '//'
+    }).contents
+    
+    return config
+  })
+
+  config = withProjectBuildGradle(config, async config => {
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      newSrc: `        maven { url 'https://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android/repository' }`,
       anchor: /mavenLocal\(\)/,
       offset: 1,
       tag: '@allboatsrise/expo-marketingcloudsdk(maven:repositories)',
@@ -32,7 +46,7 @@ const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (con
   return withAppBuildGradle(config, async config => {
     config.modResults.contents = mergeContents({
       src: config.modResults.contents,
-      newSrc: `    implementation 'com.salesforce.marketingcloud:marketingcloudsdk:8.0.6'`,
+      newSrc: `    implementation 'com.salesforce.marketingcloud:marketingcloudsdk:\${rootProject.ext.marketingCloudSdkVersion}'`,
       anchor: /dependencies\s?{/,
       offset: 1,
       tag: '@allboatsrise/expo-marketingcloudsdk(maven:dependencies)',
