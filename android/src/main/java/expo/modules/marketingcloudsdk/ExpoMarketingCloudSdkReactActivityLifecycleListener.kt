@@ -36,7 +36,7 @@ class ExpoMarketingCloudSdkReactActivityLifecycleListener(activityContext: Conte
       }.build(activity)
     }) { initStatus ->
       // TODO handle initialization status
-      Log.e("INIT", initStatus.toString())
+      Log.e("SMFCSdk: initStatus", initStatus.toString())
     }
   }
   

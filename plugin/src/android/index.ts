@@ -1,4 +1,3 @@
-import fs from 'fs'
 import { ConfigPlugin, AndroidConfig, withStringsXml, withProjectBuildGradle, withAppBuildGradle} from '@expo/config-plugins';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { MarketingCloudSdkPluginProps } from '../types';

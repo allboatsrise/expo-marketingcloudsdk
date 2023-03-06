@@ -47,14 +47,12 @@
   "dependencies": {
   },
   "devDependencies": {
-    "@allboatsrise/react-native-marketingcloudsdk": "^8.0.0",
     "expo": "^47.0.0",
     "expo-module-scripts": "^3.0.4",
     "expo-notifications": "^0.17.0",
     "zod": "~3.15.0"
   },
   "peerDependencies": {
-    "@allboatsrise/react-native-marketingcloudsdk": ">=8.0.0",
     "expo": ">=47.0.0",
     "expo-notifications": ">=0.17.0",
     "zod": "^3.15.0"
