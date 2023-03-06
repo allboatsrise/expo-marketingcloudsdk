@@ -44,8 +44,8 @@ class ExpoMarketingCloudSdkReactActivityLifecycleListener(activityContext: Conte
   private fun getAccessToken(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_access_token)
   private fun getServerUrl(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_server_url)
   private fun getSenderId(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_sender_id)
-  private fun getAnalyticsEnabled(context: Context): Boolean = context.resources.getBoolean(R.bool.expo_marketingcloudsdk_analytics_enabled)
-  private fun getDelayRegistrationUntilContactKeyIsSet(context: Context): Boolean = context.resources.getBoolean(R.bool.expo_marketingcloudsdk_delay_registration_until_contact_key_is_set)
-  private fun getInboxEnabled(context: Context): Boolean = context.resources.getBoolean(R.bool.expo_marketingcloudsdk_inbox_enabled)
-  private fun getMarkMessageReadOnInboxNotificationOpen(context: Context): Boolean = context.resources.getBoolean(R.bool.expo_marketingcloudsdk_mark_message_read_on_inbox_notification_open)
+  private fun getAnalyticsEnabled(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_analytics_enabled) == "true"
+  private fun getDelayRegistrationUntilContactKeyIsSet(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_delay_registration_until_contact_key_is_set) == "true"
+  private fun getInboxEnabled(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_inbox_enabled) == "true"
+  private fun getMarkMessageReadOnInboxNotificationOpen(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_mark_message_read_on_inbox_notification_open) == "true"
 }
