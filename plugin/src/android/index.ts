@@ -1,14 +1,33 @@
 import fs from 'fs'
-import { ConfigPlugin, AndroidConfig, withStringsXml} from '@expo/config-plugins';
+import { ConfigPlugin, AndroidConfig, withStringsXml, withAppBuildGradle} from '@expo/config-plugins';
+import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { MarketingCloudSdkPluginProps } from '../types';
 import { getGoogleServicesFilePath } from './helpers';
 
 export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+  // 1. Add Marketing Cloud SDK repository
+  config = withGradleDependencies(config, props)
+
   // Set configuration on resources
   config = withConfiguration(config, props)
 
   return config;
 };
+
+const withGradleDependencies: ConfigPlugin<MarketingCloudSdkPluginProps> = (config) => {
+  return withAppBuildGradle(config, async config => {
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      newSrc: `    implementation "com.salesforce.marketingcloud:marketingcloudsdk:8.0.6`,
+      anchor: /dependencies\s?{/,
+      offset: 1,
+      tag: '@allboatsrise/expo-marketingcloudsdk(maven:dependencies)',
+      comment: '//'
+    }).contents
+    
+    return config
+  })
+}
 
 const withConfiguration: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
     return withStringsXml(config, config => {
@@ -44,4 +63,3 @@ const withConfiguration: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, p
     return config;
   });
 }
-
