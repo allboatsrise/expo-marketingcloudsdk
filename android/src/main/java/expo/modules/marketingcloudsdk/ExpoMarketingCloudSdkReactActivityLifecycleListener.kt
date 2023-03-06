@@ -5,9 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
-// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
-
-class MarketingCloudSdkReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
+class ExpoMarketingCloudSdkReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
     // Execute static tasks before the JS engine starts.
     // These values are defined via config plugins.

@@ -4,8 +4,8 @@ import android.content.Context
 import expo.modules.core.BasePackage
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
-class MarketingCloudSdkPackage : BasePackage() {
+class ExpoMarketingCloudSdkPackage : BasePackage() {
   override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
-    return listOf(MarketingCloudSdkReactActivityLifecycleListener(activityContext))
+    return listOf(ExpoMarketingCloudSdkReactActivityLifecycleListener(activityContext))
   }
 }
