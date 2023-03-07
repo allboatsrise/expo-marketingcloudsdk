@@ -24,7 +24,7 @@ export async function setSystemToken(token: string): Promise<void> {
 }
 
 export async function getAttributes(): Promise<Record<string, string>> {
-  return await ExpoMarketingCloudSdkModule.getSystemToken();
+  return await ExpoMarketingCloudSdkModule.getAttributes();
 }
 
 export async function setAttribute(key: string, value: string): Promise<void> {
