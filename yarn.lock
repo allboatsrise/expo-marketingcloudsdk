@@ -2,11 +2,6 @@
 # yarn lockfile v1
 
 
-"@allboatsrise/react-native-marketingcloudsdk@^8.0.0":
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/@allboatsrise/react-native-marketingcloudsdk/-/react-native-marketingcloudsdk-8.0.2.tgz#ba8dfc9e75e575538511d8e94d5c762fbe846ce2"
-  integrity sha512-BbmoIubP5JopiHBfuu0y3cjK1GFvzJimwdLKftfLWQc7HsL7p7koW8EzktkVnc9bQ4rktbQ3mc6KV1J1ZBOYfA==
-
 "@ampproject/remapping@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.0.tgz#56c133824780de3174aed5ab6834f3026790154d"
