@@ -7,6 +7,7 @@ import android.util.Log
 import com.salesforce.marketingcloud.MCLogListener
 import com.salesforce.marketingcloud.MarketingCloudConfig
 import com.salesforce.marketingcloud.MarketingCloudSdk
+import com.salesforce.marketingcloud.notifications.NotificationCustomizationOptions
 import com.salesforce.marketingcloud.sfmcsdk.SFMCSdk
 import com.salesforce.marketingcloud.sfmcsdk.SFMCSdkModuleConfig
 import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogLevel
@@ -30,9 +31,12 @@ class ExpoMarketingCloudSdkReactActivityLifecycleListener(activityContext: Conte
         setAnalyticsEnabled(getAnalyticsEnabled(activity))
         setMarketingCloudServerUrl(getServerUrl(activity))
         setDelayRegistrationUntilContactKeyIsSet(getDelayRegistrationUntilContactKeyIsSet(activity))
-        setSenderId(getSenderId(activity))
+        if(getSenderId(activity) != "") setSenderId(getSenderId(activity))
         setInboxEnabled(getInboxEnabled(activity))
         setMarkMessageReadOnInboxNotificationOpen(getMarkMessageReadOnInboxNotificationOpen(activity))
+        setNotificationCustomizationOptions(
+                NotificationCustomizationOptions.create(R.drawable.notification_icon)
+        )
       }.build(activity)
     }) { initStatus ->
       // TODO handle initialization status

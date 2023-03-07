@@ -6,15 +6,15 @@ import com.salesforce.marketingcloud.sfmcsdk.SFMCSdk
 import expo.modules.notifications.service.ExpoFirebaseMessagingService
 
 open class ExpoFirebaseMessagingService : ExpoFirebaseMessagingService() {
-  override fun onMessageReceived(message: RemoteMessage) {
-    if (PushMessageManager.isMarketingCloudPush(message)) {
+  override fun onMessageReceived(remoteMessage: RemoteMessage) {
+    if (PushMessageManager.isMarketingCloudPush(remoteMessage)) {
       SFMCSdk.requestSdk { sdk ->
         sdk.mp {
-          it.pushMessageManager.handleMessage(message)
+          it.pushMessageManager.handleMessage(remoteMessage)
         }
       }
     } else {
-      super.onMessageReceived(message)
+      super.onMessageReceived(remoteMessage)
     }
   }
 }
