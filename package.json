@@ -1,8 +1,7 @@
 {
   "name": "@allboatsrise/expo-marketingcloudsdk",
   "author": "All Boats Rise Inc.",
-  "license": "MIT",
-  "version": "47.0.0-android.11",
+  "version": "47.0.0-android.12",
   "description": "Expo module for Salesforce Marketing Cloud SDK",
   "homepage": "https://github.com/allboatsrise/expo-marketingcloudsdk",
   "keywords": [
