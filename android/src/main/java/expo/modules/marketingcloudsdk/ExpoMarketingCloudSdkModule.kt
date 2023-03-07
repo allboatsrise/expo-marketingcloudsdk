@@ -7,7 +7,7 @@ import com.salesforce.marketingcloud.sfmcsdk.components.events.EventManager
 import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogLevel
 import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogListener
 import com.salesforce.marketingcloud.sfmcsdk.modules.push.PushModuleInterface
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -128,11 +128,11 @@ class ExpoMarketingCloudSdkModule : Module() {
         SFMCSdk.setLogging(LogLevel.DEBUG, object: LogListener {
           override fun out(level: LogLevel, tag: String, message: String, throwable: Throwable?) {
             sendEvent("onLog", mapOf(
-              "level" to level.toString(),
-              "subsystem" to tag,
-              "category" to tag,
-              "message" to message,
-              "stackTrace" to throwable?.toString()
+                    "level" to level.toString(),
+                    "subsystem" to tag,
+                    "category" to tag,
+                    "message" to message,
+                    "stackTrace" to throwable?.toString()
             ))
           }
         })
@@ -151,7 +151,7 @@ class ExpoMarketingCloudSdkModule : Module() {
   private fun whenPushModuleReady(promise: Promise, callback: (mp: PushModuleInterface) -> Unit) {
     SFMCSdk.requestSdk { sdk -> sdk.mp {mp ->
       if (mp.initializationStatus.status == InitializationStatus.Status.FAILED) {
-        promise.reject("ERR_SFMC_SDK_INIT", "Marketing Cloud Push Module failed to initialize")
+        promise.reject("ERR_SFMC_SDK_INIT", "Marketing Cloud Push Module failed to initialize", null)
       } else {
         callback(mp)
       }
