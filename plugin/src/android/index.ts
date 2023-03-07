@@ -1,12 +1,44 @@
 import { ConfigPlugin, AndroidConfig, withStringsXml, withProjectBuildGradle, withAppBuildGradle} from '@expo/config-plugins';
+import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { MarketingCloudSdkPluginProps } from '../types';
 
 export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+  // Add Marketing Cloud SDK repository
+  config = withConfigureRepository(config, props)
+
   // Set configuration on resources
   config = withConfiguration(config, props)
 
   return config;
 };
+
+const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (config) => {
+  config = withProjectBuildGradle(config, async config => {
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      newSrc: `        maven { url 'https://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android/repository' }`,
+      anchor: /mavenLocal\(\)/,
+      offset: 1,
+      tag: '@allboatsrise/expo-marketingcloudsdk(maven:repositories)',
+      comment: '//'
+    }).contents
+    
+    return config
+  })
+
+  return withAppBuildGradle(config, async config => {
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      newSrc: `    implementation 'com.salesforce.marketingcloud:marketingcloudsdk:8.0.6'`,
+      anchor: /dependencies\s?{/,
+      offset: 1,
+      tag: '@allboatsrise/expo-marketingcloudsdk(maven:dependencies)',
+      comment: '//'
+    }).contents
+    
+    return config
+  })
+}
 
 const withConfiguration: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
     return withStringsXml(config, config => {

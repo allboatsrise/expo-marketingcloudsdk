@@ -91,5 +91,5 @@ dependencies {
   implementation project(":expo-notifications")
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation 'com.facebook.react:react-native:+'
-  implementation "com.salesforce.marketingcloud:marketingcloudsdk:8.0.6"
+  api "com.salesforce.marketingcloud:marketingcloudsdk:8.0.6"
 }
