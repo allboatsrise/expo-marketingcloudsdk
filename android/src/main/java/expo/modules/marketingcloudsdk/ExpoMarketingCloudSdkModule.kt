@@ -10,6 +10,7 @@ import com.salesforce.marketingcloud.sfmcsdk.modules.push.PushModuleInterface
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import com.google.gson.Gson
 
 
 class ExpoMarketingCloudSdkModule : Module() {
@@ -110,7 +111,7 @@ class ExpoMarketingCloudSdkModule : Module() {
     }
 
     AsyncFunction("getSdkState") { promise: Promise ->
-      SFMCSdk.requestSdk { sdk -> promise.resolve(sdk.getSdkState()) }
+      SFMCSdk.requestSdk { sdk -> promise.resolve(Gson().fromJson(sdk.getSdkState().toString(), HashMap<String, Object>().javaClass)) }
     }
 
     AsyncFunction("track") {name: String, attributes: ReadableMap, promise: Promise ->
