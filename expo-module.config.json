@@ -1,5 +1,8 @@
 {
   "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["ExpoMarketingCloudSdkModule"]
+  },
   "android": {
     "modules": ["expo.modules.marketingcloudsdk.ExpoMarketingCloudSdkModule"]
   }
