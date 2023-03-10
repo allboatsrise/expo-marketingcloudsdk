@@ -18,7 +18,7 @@ import com.google.gson.Gson
 
 class ExpoMarketingCloudSdkModule : Module() {
   private var numberOfListeners = 0
-  private var hasOnLogListener = false
+  private var logListener : LogListener? = null
   private var inboxResponseListener : InboxResponseListener? = null
 
   // Each module class must implement the definition function. The definition consists of components
@@ -181,10 +181,8 @@ class ExpoMarketingCloudSdkModule : Module() {
 
       when (eventName) {
         "onLog" -> {
-          if (!hasOnLogListener) {
-            hasOnLogListener = true
-
-            SFMCSdk.setLogging(LogLevel.DEBUG, object : LogListener {
+          if (logListener == null) {
+            val listener = object : LogListener {
               override fun out(level: LogLevel, tag: String, message: String, throwable: Throwable?) {
                 sendEvent("onLog", mapOf(
                         "level" to level.toString(),
@@ -194,7 +192,10 @@ class ExpoMarketingCloudSdkModule : Module() {
                         "stackTrace" to throwable?.toString()
                 ))
               }
-            })
+            }
+
+            SFMCSdk.setLogging(LogLevel.DEBUG, listener)
+            logListener = listener
           }
         }
 
@@ -221,7 +222,10 @@ class ExpoMarketingCloudSdkModule : Module() {
       numberOfListeners -= count
 
       if (numberOfListeners == 0) {
-        SFMCSdk.setLogging(LogLevel.NONE, null)
+        if (logListener != null) {
+          logListener = null
+          SFMCSdk.setLogging(LogLevel.WARN, null)
+        }
 
         val listener = inboxResponseListener
         if (listener != null) {
