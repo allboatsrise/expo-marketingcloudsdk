@@ -1,7 +1,7 @@
 import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
 
 import ExpoMarketingCloudSdkModule from './ExpoMarketingCloudSdkModule';
-import { LogEventPayload } from './ExpoMarketingCloudSdk.types';
+import { InboxResponsePayload, LogEventPayload, InboxMessage } from './ExpoMarketingCloudSdk.types';
 
 export async function isPushEnabled(): Promise<boolean> {
   return await ExpoMarketingCloudSdkModule.isPushEnabled();
@@ -63,6 +63,58 @@ export async function track(name: string, attributes: Record<string, string>): P
   return await ExpoMarketingCloudSdkModule.track(name, attributes);
 }
 
+export async function deleteMessage(messageId: string): Promise<void> {
+  return await ExpoMarketingCloudSdkModule.deleteMessage(messageId);
+}
+
+export async function getDeletedMessageCount(): Promise<number> {
+  return await ExpoMarketingCloudSdkModule.getDeletedMessageCount();
+}
+
+export async function getDeletedMessages(): Promise<InboxMessage[]> {
+  return await ExpoMarketingCloudSdkModule.getDeletedMessages();
+}
+
+export async function getMessageCount(): Promise<number> {
+  return await ExpoMarketingCloudSdkModule.getMessageCount();
+}
+
+export async function getMessages(): Promise<InboxMessage[]> {
+  return await ExpoMarketingCloudSdkModule.getMessages();
+}
+
+export async function getReadMessageCount(): Promise<number> {
+  return await ExpoMarketingCloudSdkModule.getReadMessageCount();
+}
+
+export async function getReadMessages(): Promise<InboxMessage[]> {
+  return await ExpoMarketingCloudSdkModule.getReadMessages();
+}
+
+export async function getUnreadMessageCount(): Promise<number> {
+  return await ExpoMarketingCloudSdkModule.getUnreadMessageCount();
+}
+
+export async function getUnreadMessages(): Promise<InboxMessage[]> {
+  return await ExpoMarketingCloudSdkModule.getUnreadMessages();
+}
+
+export async function markAllMessagesDeleted(): Promise<void> {
+  return await ExpoMarketingCloudSdkModule.markAllMessagesDeleted();
+}
+
+export async function markAllMessagesRead(): Promise<void> {
+  return await ExpoMarketingCloudSdkModule.markAllMessagesRead();
+}
+
+export async function refreshInbox(): Promise<boolean> {
+  return await ExpoMarketingCloudSdkModule.refreshInbox();
+}
+
+export async function setMessageRead(messageId: string): Promise<void> {
+  return await ExpoMarketingCloudSdkModule.setMessageRead(messageId);
+}
+
 
 const emitter = new EventEmitter(ExpoMarketingCloudSdkModule ?? NativeModulesProxy.ExpoMarketingCloudSdk);
 
@@ -70,4 +122,8 @@ export function addLogListener(listener: (event: LogEventPayload) => void): Subs
   return emitter.addListener<LogEventPayload>('onLog', listener);
 }
 
-export { LogEventPayload };
+export function addInboxResponseListener(listener: (event: InboxResponsePayload) => void): Subscription {
+  return emitter.addListener<InboxResponsePayload>('onInboxResponse', listener)
+}
+
+export { LogEventPayload, InboxResponsePayload, InboxMessage }
