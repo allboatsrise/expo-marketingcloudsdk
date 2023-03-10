@@ -8,6 +8,7 @@ import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogLevel
 import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogListener
 import com.salesforce.marketingcloud.sfmcsdk.modules.push.PushModuleInterface
 import com.salesforce.marketingcloud.messages.inbox.InboxMessage
+import com.salesforce.marketingcloud.messages.inbox.InboxMessageManager.InboxResponseListener
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -18,7 +19,7 @@ import com.google.gson.Gson
 class ExpoMarketingCloudSdkModule : Module() {
   private var numberOfListeners = 0
   private var hasOnLogListener = false
-  private var inboxResponseListener : ((messages: List<InboxMessage>) -> Unit)? = null
+  private var inboxResponseListener : InboxResponseListener? = null
 
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
@@ -114,11 +115,11 @@ class ExpoMarketingCloudSdkModule : Module() {
     }
 
     AsyncFunction("getSdkState") { promise: Promise ->
-      SFMCSdk.requestSdk { sdk -> promise.resolve(Gson().fromJson(sdk.getSdkState().toString(), HashMap<String, Object>().javaClass)) }
+      SFMCSdk.requestSdk { sdk -> promise.resolve(Gson().fromJson(sdk.getSdkState().toString(), HashMap<String, Any>().javaClass)) }
     }
 
     AsyncFunction("track") {name: String, attributes: ReadableMap, promise: Promise ->
-      var event = EventManager.customEvent(name, attributes.toHashMap())
+      val event = EventManager.customEvent(name, attributes.toHashMap())
       SFMCSdk.track(event)
       promise.resolve(true)
     }
@@ -200,11 +201,14 @@ class ExpoMarketingCloudSdkModule : Module() {
         "onInboxResponse" -> {
           whenPushModuleReady(null) { mp ->
             if (inboxResponseListener == null) {
-              var listener = { messages: List<InboxMessage> ->
-                sendEvent("onInboxResponse", mapOf(
-                        "messages" to messagesToJSValue(messages)
-                ))
+              val listener = object: InboxResponseListener {
+                override fun onInboxMessagesChanged(messages: MutableList<InboxMessage>) {
+                  sendEvent("onInboxResponse", mapOf(
+                          "messages" to messagesToJSValue(messages)
+                  ))
+                }
               }
+
               mp.inboxMessageManager.registerInboxResponseListener(listener)
               inboxResponseListener = listener
             }
@@ -219,11 +223,15 @@ class ExpoMarketingCloudSdkModule : Module() {
       if (numberOfListeners == 0) {
         SFMCSdk.setLogging(LogLevel.NONE, null)
 
-        var listener = inboxResponseListener
+        val listener = inboxResponseListener
         if (listener != null) {
           inboxResponseListener = null
           whenPushModuleReady(null) { mp ->
-            mp.inboxMessageManager.registerInboxResponseListener(listener)
+            try {
+              mp.inboxMessageManager.unregisterInboxResponseListener(listener)
+            } catch (ex: Throwable) {
+              throw ex
+            }
           }
         }
       }
@@ -240,7 +248,7 @@ class ExpoMarketingCloudSdkModule : Module() {
     } }
   }
 
-  private fun messagesToJSValue(messages: List<InboxMessage>) {
-    JSTypeConverter.convertToJSValue(messages)
+  private fun messagesToJSValue(messages: List<InboxMessage>): Any? {
+    return JSTypeConverter.convertToJSValue(messages)
   }
 }
