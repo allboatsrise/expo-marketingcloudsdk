@@ -2,7 +2,7 @@ import ExpoModulesCore
 import SFMCSDK
 import MarketingCloudSDK
 
-public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscriber {
+public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscriber, EXNotificationsDelegate {
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
     
     // Enable logging for debugging early on. Debug level is not recommended for production apps, as significant data
@@ -39,7 +39,9 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
     let completionHandler: (OperationResult) -> () = { result in
         if result == .success {
           // module is fully configured and ready for user
-          // var asdf = ModuleRegistryProvider.getSingletonModule(for: "NotificationCenterDelegate") as EXNotificationsDelegate
+          var notificationCenterDelegate = ModuleRegistryProvider.getSingletonModule(for: EXNotificationCenterDelegate.self) as! EXNotificationCenterDelegate
+          
+          notificationCenterDelegate.add(self)
   
         } else if result == .error {
           // module failed to initialize, check logs for more details
@@ -56,5 +58,10 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
 
     
     return true
+  }
+  
+  public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+    SFMCSdk.mp.setNotificationUserInfo(userInfo)
+    return UIBackgroundFetchResult.newData
   }
 }
