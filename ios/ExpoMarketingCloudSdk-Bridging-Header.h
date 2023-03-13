@@ -3,3 +3,4 @@
 //
 
 #import <EXNotifications/EXNotificationCenterDelegate.h>
+#import <MarketingCloudSDK/MarketingCloudSDK.h>

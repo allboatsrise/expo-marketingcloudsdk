@@ -2,7 +2,10 @@ import ExpoModulesCore
 import SFMCSDK
 import MarketingCloudSDK
 
-public class ExpoMarketingCloudSdkModule: Module {
+public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDelegate {
+  private var refreshInboxPromise: Promise?
+  private var logger: ExpoMarketingCloudSdkLogger?
+  
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
   // See https://docs.expo.dev/modules/module-api for more details about available components.
@@ -14,6 +17,24 @@ public class ExpoMarketingCloudSdkModule: Module {
 
     // Defines event names that the module can send to JavaScript.
     Events("onLog", "onInboxResponse")
+    
+    OnStartObserving {
+      if (logger == nil) {
+        self.logger = ExpoMarketingCloudSdkLogger()
+        self.logger!.delegate = self
+        SFMCSdk.setLogger(logLevel: .debug, logOutputter: self.logger!)
+      }
+      
+      NotificationCenter.default.addObserver(self, selector: #selector(self.inboxMessagesNewInboxMessagesListener), name: NSNotification.Name.SFMCInboxMessagesNewInboxMessages, object: nil)
+      
+      NotificationCenter.default.addObserver(self, selector: #selector(self.inboxMessagesRefreshCompleteListener), name: NSNotification.Name.SFMCInboxMessagesRefreshComplete, object: nil)
+    }
+    
+    OnStopObserving {
+      NotificationCenter.default.removeObserver(self, name: NSNotification.Name.SFMCInboxMessagesNewInboxMessages, object: nil)
+      
+      NotificationCenter.default.removeObserver(self, name: NSNotification.Name.SFMCInboxMessagesRefreshComplete, object: nil)
+    }
 
     AsyncFunction("isPushEnabled") { (promise: Promise) in
       promise.resolve(SFMCSdk.mp.pushEnabled())
@@ -32,14 +53,14 @@ public class ExpoMarketingCloudSdkModule: Module {
     AsyncFunction("getSystemToken") { (promise: Promise) in
       promise.resolve(SFMCSdk.mp.deviceToken())
     }
-
+    
     AsyncFunction("setSystemToken") { (token: String, promise: Promise) in
       do {
         let token = try ExpoMarketingCloudSdkDeviceToken.init(hexString: token)
         SFMCSdk.mp.setDeviceToken(token.data)
         promise.resolve(SFMCSdk.mp.deviceToken())
       } catch {
-        return promise.reject("invalid-hex-token", "Failed to convert token to data type", nil)
+        promise.reject("invalid-hex-token", "Failed to convert token to data type")
       }
     }
 
@@ -87,7 +108,7 @@ public class ExpoMarketingCloudSdkModule: Module {
     }
 
     AsyncFunction("track") { (name: String, attributes: Dictionary<String, Any>, promise: Promise) in
-      let event = CustomEvent(name: name, attributes: attributes)
+      let event = CustomEvent(name: name, attributes: attributes)!
       SFMCSdk.track(event: event)
       promise.resolve(true)
     }
@@ -136,11 +157,44 @@ public class ExpoMarketingCloudSdkModule: Module {
     }
 
     AsyncFunction("refreshInbox") { (promise: Promise) in
-      promise.resolve(SFMCSdk.mp.refreshMessages())
+      let successful = SFMCSdk.mp.refreshMessages()
+      if (successful == false) {
+        promise.resolve(false)
+      } else {
+        // resolve previous promise if one exists
+        self.refreshInboxPromise?.resolve(false)
+        
+        // queue latest promise
+        self.refreshInboxPromise = promise
+      }
     }
 
     AsyncFunction("setMessageRead") { (messageId: String, promise: Promise) in
       promise.resolve(SFMCSdk.mp.markMessageWithIdRead(messageId: messageId))
     }
+  }
+  
+  @objc
+  private func inboxMessagesNewInboxMessagesListener() {
+    sendEvent("onInboxResponse", [
+      "messages": []
+    ])
+  }
+  
+  @objc func inboxMessagesRefreshCompleteListener() {
+    if (self.refreshInboxPromise != nil) {
+      self.refreshInboxPromise!.resolve(true)
+      self.refreshInboxPromise = nil
+    }
+  }
+  
+  @objc
+  func onLog(level: LogLevel, subsystem: String, category: LoggerCategory, message: String) {
+    sendEvent("onLog", [
+      "level": level.rawValue,
+      "subsystem": subsystem,
+      "category": category.rawValue,
+      "message": message
+    ])
   }
 }
