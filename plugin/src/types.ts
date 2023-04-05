@@ -1,49 +1,52 @@
-export type MarketingCloudSdkPluginProps = {
+import { z } from 'zod';
+
+export type MarketingCloudSdkPluginProps = z.infer<typeof MarketingCloudSDKPluginPropsSchema>
+
+export const MarketingCloudSDKPluginPropsSchema = z.object({
   /** Marketing Cloud app id */
-  appId: string;
+  appId: z.string({required_error: 'Must provide app id.'}).min(1),
+
   /** Marketing Cloud access token */
-  accessToken: string;
+  accessToken: z.string({required_error: 'Must provide access token.'}).min(1),
+
   /** Marketing Cloud server url */
-  serverUrl: string;
-  /**
-   * (Android only) Local path to an image to use as the icon for push notifications.
-   * 96x96 all-white png with transparency. We recommend following
-   * [Google’s design guidelines](https://material.io/design/iconography/product-icons.html#design-principles).
-   */
-  iconFile?: string;
+  serverUrl: z.string({required_error: 'Must provide server url.'}).min(1),
+
   /**
    * (Android only) Marketing Cloud FCM sender id. Defaults to `project_info.project_number`
    * defined in `android.googleServicesFile` (google-services.json) if defined.
    */
-  senderId?: string;
+  senderId: z.string().min(1).optional(),
 
   /**
    * Sets the configuration value to use for the Salesforce MarketingCloud Tenant Specific mid.
    */
-  mid?: string;
+  mid: z.string().min(1).optional(),
 
   /**
    * Sets the configuration flag that enables or disables inbox services
    */
-  inboxEnabled?: boolean
+  inboxEnabled: z.boolean().optional(),
 
   /**
    * Sets the configuration flag that enables or disables location services
    */
-  locationEnabled?: boolean;
+  locationEnabled: z.boolean().optional(),
 
   /**
    * Sets the configuration flag that enables or disables Salesforce MarketingCloud Analytics services
    */
-  analyticsEnabled?: boolean;
+  analyticsEnabled: z.boolean().optional(),
 
   /**
    * Sets the configuration value which enables or disables application control over badging
    */
-  applicationControlsBadging?: boolean;
+  applicationControlsBadging: z.boolean().optional(),
 
   /**
    * Sets the configuration value which enables or disables application control over delaying SDK registration until a contact key is set
    */
-  delayRegistrationUntilContactKeyIsSet?: boolean;
-};
+  delayRegistrationUntilContactKeyIsSet: z.boolean().optional(),
+
+  markNotificationReadOnInboxNotificationOpen: z.boolean().optional(),
+}, {required_error: 'Must configure plugin options.'})

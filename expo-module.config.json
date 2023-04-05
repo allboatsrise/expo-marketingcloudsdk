@@ -1,0 +1,10 @@
+{
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["ExpoMarketingCloudSdkModule"],
+    "appDelegateSubscribers": ["ExpoMarketingCloudSdkAppDelegateSubscriber"]
+  },
+  "android": {
+    "modules": ["expo.modules.marketingcloudsdk.ExpoMarketingCloudSdkModule"]
+  }
+}
