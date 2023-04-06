@@ -13,7 +13,6 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.JSTypeConverter
-import com.google.gson.Gson
 
 
 class ExpoMarketingCloudSdkModule : Module() {
@@ -115,7 +114,7 @@ class ExpoMarketingCloudSdkModule : Module() {
     }
 
     AsyncFunction("getSdkState") { promise: Promise ->
-      SFMCSdk.requestSdk { sdk -> promise.resolve(Gson().fromJson(sdk.getSdkState().toString(), HashMap<String, Any>().javaClass)) }
+      SFMCSdk.requestSdk { sdk -> promise.resolve(sdk.getSdkState().toString()) }
     }
 
     AsyncFunction("track") {name: String, attributes: ReadableMap, promise: Promise ->
