@@ -56,7 +56,8 @@ export async function getContactKey(): Promise<string> {
 }
 
 export async function getSdkState(): Promise<Record<string, unknown>> {
-  return await ExpoMarketingCloudSdkModule.getSdkState();
+  const state = await ExpoMarketingCloudSdkModule.getSdkState();
+  return JSON.parse(state);
 }
 
 export async function track(name: string, attributes: Record<string, string>): Promise<void> {
