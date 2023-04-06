@@ -17,8 +17,8 @@ const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (con
     config.modResults.contents = mergeContents({
       src: config.modResults.contents,
       newSrc: `        maven { url 'https://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android/repository' }`,
-      anchor: /mavenLocal\(\)/,
-      offset: 1,
+      anchor: 'allprojects {',
+      offset: 2,
       tag: '@allboatsrise/expo-marketingcloudsdk(maven:repositories)',
       comment: '//'
     }).contents
