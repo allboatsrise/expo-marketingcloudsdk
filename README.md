@@ -53,33 +53,52 @@ expo: {
 To use the MarketingCloud SDK in your Expo app, you first need to import requireNativeModule from expo-modules-core:
 Next, you can create an instance of the MarketingCloud SDK by calling `requireNativeModule` with the module name, `ExpoMarketingCloudSdk`:
 
-```typescript
-import { requireNativeModule } from 'expo-modules-core'
+## Functions
 
-const MarketingCloud = requireNativeModule('ExpoMarketingCloudSdk')
+| Function Name | Parameters | Return Type | Description |
+| --- | --- | --- | --- |
+| `isPushEnabled` | None | `Promise<boolean>` | Returns a promise that resolves to a boolean indicating whether push notifications are enabled for the user. |
+| `enablePush` | None | `Promise<void>` | Returns a promise that resolves when push notifications have been successfully enabled. |
+| `disablePush` | None | `Promise<void>` | Returns a promise that resolves when push notifications have been successfully disabled. |
+| `getSystemToken` | None | `Promise<string>` | Returns a promise that resolves to a string representing the device's push notification token. |
+| `setSystemToken` | `token: string` | `Promise<void>` | Returns a promise that resolves when the device's push notification token has been successfully set. |
+| `getAttributes` | None | `Promise<Record<string, string>>` | Returns a promise that resolves to an object representing the user's attributes. |
+| `setAttribute` | `key: string`, `value: string` | `Promise<void>` | Returns a promise that resolves when an attribute has been successfully set for the user. |
+| `clearAttribute` | `key: string` | `Promise<void>` | Returns a promise that resolves when an attribute has been successfully cleared for the user. |
+| `addTag` | `tag: string` | `Promise<void>` | Returns a promise that resolves when a tag has been successfully added for the user. |
+| `removeTag` | `tag: string` | `Promise<void>` | Returns a promise that resolves when a tag has been successfully removed for the user. |
+| `getTags` | None | `Promise<string[]>` | Returns a promise that resolves to an array of strings representing the user's tags. |
+| `setContactKey` | `contactKey: string` | `Promise<void>` | Returns a promise that resolves when the user's contact key has been successfully set. |
+| `getContactKey` | None | `Promise<string>` | Returns a promise that resolves to a string representing the user's contact key. |
+| `getSdkState` | None | `Promise<Record<string, unknown>>` | Returns a promise that resolves to an object representing the current state of the SDK. |
+| `track` | `name: string`, `attributes: Record<string, string>` | `Promise<void>` | Returns a promise that resolves when a custom event has been successfully tracked. |
+| `deleteMessage` | `messageId: string` | `Promise<void>` | Returns a promise that resolves when a specific inbox message has been successfully deleted. |
+| `getDeletedMessageCount` | None | `Promise<number>` | Returns a promise that resolves to a number representing the total number of deleted inbox messages. |
+| `getDeletedMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the deleted inbox messages. |
+| `getMessageCount` | None | `Promise<number>` | Returns a promise that resolves to a number representing the total number of inbox messages. |
+| `getMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the inbox messages. |
+| `getReadMessageCount` | None | `Promise<number>` | Returns a promise that resolves to a number representing the total number of read inbox messages. |
+| `getReadMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the read inbox messages. |
 
-const logIsPushEnabled = async () => {
-  const isEnabled = await MarketingCloud.isPushEnabled()
-  console.log(isEnabled)
-}
-```
 
 ## Add event listener
-To subscribe to these events, you need to wrap the native module with the EventEmitter class:
+Available event listeners:
+
+Sure, here's the table with separate columns for function name and parameters:
+
+| Function | Parameters | Description |
+| --- | --- | --- |
+| `addLogListener` | `listener: (event: LogEventPayload) => void` | Adds a listener function to the `onLog` event, which is triggered when a new log event is generated. The function should take an argument of type `LogEventPayload`, which contains information about the log event. Returns a `Subscription` object that can be used to unsubscribe the listener. |
+| `addInboxResponseListener` | `listener: (event: InboxResponsePayload) => void` | Adds a listener function to the `onInboxResponse` event, which is triggered when a new inbox response is received. The function should take an argument of type `InboxResponsePayload`, which contains information about the inbox response. Returns a `Subscription` object that can be used to unsubscribe the listener. |
 
 ```typescript
-import { requireNativeModule, EventEmitter, Subscription } from 'expo-modules-core';
-
-const MarketingCloud = requireNativeModule('ExpoMarketingCloudSdk')
-const emitter = new EventEmitter(MarketingCloud);
-
 // Example of a listener being used in the useEffect hook.
 
 useEffect(() => {
-    const logSubscription = emitter.addListener('onLog', (logEvent: LogEventPayload) => {
+    const logSubscription = addLogListener((logEvent: LogEventPayload) => {
         // Do something with logEvent
       })
-    const inboxSubscription = emitter.addListener('onInboxResponse', (inboxEvent: InboxMessage[]) => {
+    const inboxSubscription = addInboxResponseListener((inboxEvent: InboxMessage[]) => {
         // Do something with inboxEvent
       })
 
