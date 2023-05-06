@@ -63,3 +63,31 @@ const logIsPushEnabled = async () => {
   console.log(isEnabled)
 }
 ```
+
+## Add event listener
+To subscribe to these events, you need to wrap the native module with the EventEmitter class:
+
+```typescript
+import { requireNativeModule, EventEmitter, Subscription } from 'expo-modules-core';
+
+const MarketingCloud = requireNativeModule('ExpoMarketingCloudSdk')
+const emitter = new EventEmitter(MarketingCloud);
+
+// Example of a listener being used in the useEffect hook.
+
+useEffect(() => {
+    const logSubscription = emitter.addListener('onLog', (logEvent: LogEventPayload) => {
+        // Do something with logEvent
+      })
+    const inboxSubscription = emitter.addListener('onInboxResponse', (inboxEvent: InboxMessage[]) => {
+        // Do something with inboxEvent
+      })
+
+    return () => {
+      logSubscription.remove()
+      inboxSubscription.remove()
+    }
+}, [])
+```
+
+
