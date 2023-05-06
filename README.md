@@ -92,7 +92,7 @@ Sure, here's the table with separate columns for function name and parameters:
 | `addInboxResponseListener` | `listener: (event: InboxResponsePayload) => void` | Adds a listener function to the `onInboxResponse` event, which is triggered when a new inbox response is received. The function should take an argument of type `InboxResponsePayload`, which contains information about the inbox response. Returns a `Subscription` object that can be used to unsubscribe the listener. |
 
 ```typescript
-// Example of a listener being used in the useEffect hook.
+// listeners being used in a useEffect hook.
 
 useEffect(() => {
     const logSubscription = addLogListener((logEvent: LogEventPayload) => {
