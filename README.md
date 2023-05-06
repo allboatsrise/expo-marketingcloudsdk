@@ -2,7 +2,7 @@
 
 This is an Expo module that provides a wrapper around the Salesforce Marketing Cloud SDK for iOS and Android.
 
-It allows Expo-based apps to integrate with the Marketing Cloud API.
+It allows Expo-based apps to integrate with the Marketing Cloud SDK.
 
 ## Installation
 
