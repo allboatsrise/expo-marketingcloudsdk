@@ -83,8 +83,6 @@ Various functions, their parameters, return values, and their specific purposes 
 ## Add event listener
 Available event listeners:
 
-Sure, here's the table with separate columns for function name and parameters:
-
 | Function | Parameters | Description |
 | --- | --- | --- |
 | `addLogListener` | `listener: (event: LogEventPayload) => void` | Adds a listener function to the `onLog` event, which is triggered when a new log event is generated. The function should take an argument of type `LogEventPayload`, which contains information about the log event. Returns a `Subscription` object that can be used to unsubscribe the listener. |
