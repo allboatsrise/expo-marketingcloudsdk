@@ -19,7 +19,7 @@ yarn add expo-marketingcloudsdk
 ## Plugin setup
 #### [View parameters](#plugin-parameters)
 
-Add package to `plugin` in `app.js`/`app.config.js`.
+Add package to `plugins` in `app.js`/`app.config.js`.
 
 ```javascript
 expo: {
