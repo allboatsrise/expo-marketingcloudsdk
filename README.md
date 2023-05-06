@@ -50,8 +50,7 @@ expo: {
 
 # Usage
 
-To use the MarketingCloud SDK in your Expo app, you first need to import requireNativeModule from expo-modules-core:
-Next, you can create an instance of the MarketingCloud SDK by calling `requireNativeModule` with the module name, `ExpoMarketingCloudSdk`:
+Various functions, their parameters, return values, and their specific purposes in `ExpoMarketingCloudSdk`
 
 ## Functions
 
