@@ -9,11 +9,11 @@ It allows Expo-based apps to integrate with the Marketing Cloud SDK.
 To install the package use your prefered package manager:
 
 ```bash
-npm install expo-marketingcloudsdk --save
+npm install @allboatsrise/expo-marketingcloudsdk expo-notifications
 ```
 or
 ```bash
-yarn add expo-marketingcloudsdk
+yarn add @allboatsrise/expo-marketingcloudsdk expo-notifications
 ```
 
 ## Plugin setup
@@ -23,12 +23,17 @@ Add package to `plugins` in `app.js`/`app.config.js`.
 
 ```javascript
 expo: {
-    ...
-    plugins: [['expo-marketingcloudsdk', {
-        appId: 'MARKETING_CLOUD_APP_ID',
-        accessToken: "MARKETING_CLOUD_ACCESS_TOKEN",
-        serverUrl: MARKETING_CLOUD_SERVER_URL,
-        }]]
+  ...
+  plugins: [
+    [
+      '@allboatsrise/expo-marketingcloudsdk', {
+        appId: << MARKETING_CLOUD_APP_ID >>,
+        accessToken: << MARKETING_CLOUD_ACCESS_TOKEN >>,
+        serverUrl: << MARKETING_CLOUD_SERVER_URL >>,
+      }
+    ],
+    'expo-notifications',
+  ]
 }
 ```
 
