@@ -21,18 +21,17 @@ yarn add @allboatsrise/expo-marketingcloudsdk expo-notifications
 
 Add package to `plugins` in `app.js`/`app.config.js`.
 
-```javascript
-expo: {
-  ...
-  plugins: [
+```json
+"expo": {
+  "plugins": [
     [
-      '@allboatsrise/expo-marketingcloudsdk', {
-        appId: << MARKETING_CLOUD_APP_ID >>,
-        accessToken: << MARKETING_CLOUD_ACCESS_TOKEN >>,
-        serverUrl: << MARKETING_CLOUD_SERVER_URL >>,
+      "@allboatsrise/expo-marketingcloudsdk", {
+        "appId": "<< MARKETING_CLOUD_APP_ID >>",
+        "accessToken": "<< MARKETING_CLOUD_ACCESS_TOKEN >>",
+        "serverUrl": "<< MARKETING_CLOUD_SERVER_URL >>",
       }
     ],
-    'expo-notifications',
+    "expo-notifications",
   ]
 }
 ```
