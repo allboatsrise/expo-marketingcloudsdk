@@ -24,7 +24,7 @@ export async function setSystemToken(token: string): Promise<void> {
 }
 
 export async function getAttributes(): Promise<Record<string, string>> {
-  return await ExpoMarketingCloudSdkModule.getAttributes() || {};
+  return await ExpoMarketingCloudSdkModule.getAttributes() ?? {};
 }
 
 export async function setAttribute(key: string, value: string): Promise<void> {
@@ -44,7 +44,7 @@ export async function removeTag(tag: string): Promise<void> {
 }
 
 export async function getTags(): Promise<string[]> {
-  return await ExpoMarketingCloudSdkModule.getTags() || [];
+  return await ExpoMarketingCloudSdkModule.getTags() ?? [];
 }
 
 export async function setContactKey(contactKey: string): Promise<void> {
@@ -56,7 +56,7 @@ export async function getContactKey(): Promise<string> {
 }
 
 export async function getSdkState(): Promise<Record<string, unknown>> {
-  const state = await ExpoMarketingCloudSdkModule.getSdkState() || {};
+  const state = await ExpoMarketingCloudSdkModule.getSdkState() ?? {};
   return JSON.parse(state);
 }
 
