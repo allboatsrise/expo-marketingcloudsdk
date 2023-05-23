@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'expo.modules.marketingcloudsdk'
-version = '47.0.0'
+version = '48.0.2'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -77,7 +77,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 1
-    versionName "47.0.0"
+    versionName "48.0.2"
   }
   lintOptions {
     abortOnError false
@@ -94,5 +94,5 @@ dependencies {
   implementation project(":expo-notifications")
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation 'com.facebook.react:react-native:+'
-  api "com.salesforce.marketingcloud:marketingcloudsdk:8.0.8"
+  api "com.salesforce.marketingcloud:marketingcloudsdk:8.0.9"
 }
