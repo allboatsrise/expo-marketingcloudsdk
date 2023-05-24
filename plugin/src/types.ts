@@ -10,7 +10,7 @@ export const MarketingCloudSDKPluginPropsSchema = z.object({
   accessToken: z.string({required_error: 'Must provide access token.'}).min(1),
 
   /** Marketing Cloud server url */
-  serverUrl: z.string({required_error: 'Must provide server url.'}).min(1),
+  serverUrl: z.string({required_error: 'Must provide server url.'}).url({message: 'Invalid server url.'}),
 
   /**
    * (Android only) Marketing Cloud FCM sender id. Defaults to `project_info.project_number`
