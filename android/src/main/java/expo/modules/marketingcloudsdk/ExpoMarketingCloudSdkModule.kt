@@ -12,7 +12,7 @@ import com.salesforce.marketingcloud.messages.inbox.InboxMessageManager.InboxRes
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.types.JSTypeConverter
+import java.text.SimpleDateFormat
 
 
 class ExpoMarketingCloudSdkModule : Module() {
@@ -251,7 +251,31 @@ class ExpoMarketingCloudSdkModule : Module() {
     } }
   }
 
-  private fun messagesToJSValue(messages: List<InboxMessage>): Any? {
-    return JSTypeConverter.convertToJSValue(messages)
+  private fun messagesToJSValue(messages: List<InboxMessage>): List<Map<String, Any?>> {
+    val dateFormatter =  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+
+    return messages.map {
+      var media = it.media
+
+      mapOf(
+        "id" to it.id,
+        "alert" to it.alert,
+        "custom" to it.custom,
+        "customKeys" to it.customKeys,
+        "deleted" to it.deleted,
+        "endDateUtc" to if (it.endDateUtc != null) dateFormatter.format(it.endDateUtc) else null,
+        "media" to if (media != null) mapOf(
+          "url" to media.url,
+          "altText" to media.altText,
+        ) else null,
+        "read" to it.read,
+        "sendDateUtc" to if (it.sendDateUtc != null) dateFormatter.format(it.sendDateUtc) else null,
+        "sound" to it.sound,
+        "startDateUtc" to if (it.startDateUtc != null) dateFormatter.format(it.startDateUtc) else null,
+        "subject" to it.subject,
+        "title" to it.title,
+        "url" to it.url,
+      )
+    }
   }
 }
