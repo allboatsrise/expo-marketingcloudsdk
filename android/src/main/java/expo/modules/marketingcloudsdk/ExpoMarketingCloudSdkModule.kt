@@ -12,6 +12,7 @@ import com.salesforce.marketingcloud.messages.inbox.InboxMessageManager.InboxRes
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 
 
@@ -260,8 +261,14 @@ class ExpoMarketingCloudSdkModule : Module() {
       mapOf(
         "id" to it.id,
         "alert" to it.alert,
-        "custom" to it.custom,
-        "customKeys" to it.customKeys,
+        "custom" to if (it.custom != null) {
+          buildMap<String, String> {
+            var obj = JSONObject(it.custom)
+            obj.keys().forEach {
+              put(it, obj.getString(it))
+            }
+          }
+        } else null,
         "deleted" to it.deleted,
         "endDateUtc" to if (it.endDateUtc != null) dateFormatter.format(it.endDateUtc) else null,
         "media" to if (media != null) mapOf(

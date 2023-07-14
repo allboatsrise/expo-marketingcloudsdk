@@ -13,18 +13,18 @@ export type Media = {
 
 export type InboxMessage = {
   alert: null | string
-  custom: null | string
-  customKeys: null | string
-  deleted: boolean
+  custom?: null | Record<string, string>
+  deleted: boolean | number
   endDateUtc: null | string
   id: string
   media: null | Media
-  read: boolean
+  read: boolean | number
   sendDateUtc: null | string
   sound: null | string
   startDateUtc: null | string
   subject: null | string
   title: null | string
+  subtitle?: null | string
   url: string
 }
 
