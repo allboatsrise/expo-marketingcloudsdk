@@ -7,24 +7,24 @@ export type LogEventPayload = {
 }
 
 export type Media = {
-  altText?: string
-  url?: string
+  altText: null | string
+  url: null | string
 }
 
 export type InboxMessage = {
-  alert?: string
-  custom?: string
-  customKeys?: Record<string, string>
-  deleted: boolean
-  endDateUtc?: string
+  alert: null | string
+  custom?: null | Record<string, string>
+  deleted: boolean | number
+  endDateUtc: null | string
   id: string
-  media?: Media
-  read: boolean
-  sendDateUtc?: string
-  sound?: string
-  startDateUtc?: string
-  subject?: string
-  title?: string
+  media: null | Media
+  read: boolean | number
+  sendDateUtc: null | string
+  sound: null | string
+  startDateUtc: null | string
+  subject: null | string
+  title: null | string
+  subtitle?: null | string
   url: string
 }
 
