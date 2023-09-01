@@ -8,4 +8,9 @@ class ExpoMarketingCloudSdkNotificationsDelegate : NSObject, EXNotificationsDele
     SFMCSdk.mp.setNotificationUserInfo(userInfo)
     return UIBackgroundFetchResult.newData
   }
+  @objc
+  public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    SFMCSdk.mp.setNotificationRequest(response.notification.request)
+    completionHandler()
+  }
 }
