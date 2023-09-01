@@ -13,8 +13,4 @@ class ExpoMarketingCloudSdkNotificationsDelegate : NSObject, EXNotificationsDele
     SFMCSdk.mp.setNotificationRequest(response.notification.request)
     completionHandler()
   }
-  @objc
-  public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-      completionHandler(.alert)
-  }
 }
