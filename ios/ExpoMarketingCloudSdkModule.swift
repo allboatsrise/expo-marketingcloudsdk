@@ -16,7 +16,7 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
     Name("ExpoMarketingCloudSdk")
 
     // Defines event names that the module can send to JavaScript.
-    Events("onLog", "onInboxResponse")
+    Events("onLog", "onInboxResponse", "onRegistrationResponseSucceeded")
     
     OnStartObserving {
       if (logger == nil) {
@@ -28,12 +28,16 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
       NotificationCenter.default.addObserver(self, selector: #selector(self.inboxMessagesNewInboxMessagesListener), name: NSNotification.Name.SFMCInboxMessagesNewInboxMessages, object: nil)
       
       NotificationCenter.default.addObserver(self, selector: #selector(self.inboxMessagesRefreshCompleteListener), name: NSNotification.Name.SFMCInboxMessagesRefreshComplete, object: nil)
+      
+      NotificationCenter.default.addObserver(self, selector: #selector(self.foundationRegistrationResponseSucceededListener), name: NSNotification.Name.SFMCFoundationRegistrationResponseSucceeded, object: nil)
     }
     
     OnStopObserving {
       NotificationCenter.default.removeObserver(self, name: NSNotification.Name.SFMCInboxMessagesNewInboxMessages, object: nil)
       
       NotificationCenter.default.removeObserver(self, name: NSNotification.Name.SFMCInboxMessagesRefreshComplete, object: nil)
+      
+      NotificationCenter.default.removeObserver(self, name: NSNotification.Name.SFMCFoundationRegistrationResponseSucceeded, object: nil)
     }
 
     AsyncFunction("isPushEnabled") { (promise: Promise) in
@@ -196,5 +200,10 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
       "category": category.rawValue,
       "message": message
     ])
+  }
+  
+  @objc
+  func foundationRegistrationResponseSucceededListener(response: [String: Any]) {
+    sendEvent("onRegistrationResponseSucceeded", ["response": response])
   }
 }

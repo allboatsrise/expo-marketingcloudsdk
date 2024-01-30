@@ -1,7 +1,7 @@
 import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
 
 import ExpoMarketingCloudSdkModule from './ExpoMarketingCloudSdkModule';
-import { InboxResponsePayload, LogEventPayload, InboxMessage } from './ExpoMarketingCloudSdk.types';
+import { InboxResponsePayload, LogEventPayload, InboxMessage, RegistrationResponseSucceededPayload } from './ExpoMarketingCloudSdk.types';
 
 export async function isPushEnabled(): Promise<boolean> {
   return await ExpoMarketingCloudSdkModule.isPushEnabled();
@@ -128,6 +128,10 @@ export function addLogListener(listener: (event: LogEventPayload) => void): Subs
 
 export function addInboxResponseListener(listener: (event: InboxResponsePayload) => void): Subscription {
   return emitter.addListener<InboxResponsePayload>('onInboxResponse', listener)
+}
+
+export function addRegistrationResponseSucceededListener(listener: (event: RegistrationResponseSucceededPayload) => void): Subscription {
+  return emitter.addListener<RegistrationResponseSucceededPayload>('onRegistrationResponseSucceeded', listener)
 }
 
 export { LogEventPayload, InboxResponsePayload, InboxMessage }
