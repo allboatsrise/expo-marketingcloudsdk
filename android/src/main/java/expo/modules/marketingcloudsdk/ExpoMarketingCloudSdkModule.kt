@@ -9,6 +9,8 @@ import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogListener
 import com.salesforce.marketingcloud.sfmcsdk.modules.push.PushModuleInterface
 import com.salesforce.marketingcloud.messages.inbox.InboxMessage
 import com.salesforce.marketingcloud.messages.inbox.InboxMessageManager.InboxResponseListener
+import com.salesforce.marketingcloud.registration.Registration
+import com.salesforce.marketingcloud.registration.RegistrationManager.RegistrationEventListener
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -20,6 +22,7 @@ class ExpoMarketingCloudSdkModule : Module() {
   private var numberOfListeners = 0
   private var logListener : LogListener? = null
   private var inboxResponseListener : InboxResponseListener? = null
+  private var registrationListener : RegistrationEventListener? = null
 
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
@@ -31,7 +34,7 @@ class ExpoMarketingCloudSdkModule : Module() {
     Name("ExpoMarketingCloudSdk")
 
     // Defines event names that the module can send to JavaScript.
-    Events("onLog", "onInboxResponse")
+    Events("onLog", "onInboxResponse", "onRegistrationResponseSucceeded")
 
     AsyncFunction("isPushEnabled") { promise: Promise ->
       whenPushModuleReady(promise) { mp -> promise.resolve(mp.pushMessageManager.isPushEnabled) }
@@ -215,6 +218,43 @@ class ExpoMarketingCloudSdkModule : Module() {
             }
           }
         }
+
+        "onRegistrationResponseSucceeded" -> {
+          whenPushModuleReady(null) { mp ->
+            if (registrationListener == null) {
+              val listener = object: RegistrationEventListener {
+                override fun onRegistrationReceived(it: Registration) {
+                  sendEvent("onRegistrationResponseSucceeded", mapOf(
+                    "response" to mapOf(
+                      "appId" to it.appId,
+                      "appVersion" to it.appVersion,
+                      "attributes" to it.attributes,
+                      "contactKey" to it.contactKey,
+                      "deviceId" to it.deviceId,
+                      "dst" to it.dst,
+                      "hwid" to it.hwid,
+                      "locale" to it.locale,
+                      "locationEnabled" to it.locationEnabled,
+                      "platform" to it.platform,
+                      "platformVersion" to it.platformVersion,
+                      "proximityEnabled" to it.proximityEnabled,
+                      "pushEnabled" to it.pushEnabled,
+                      "sdkVersion" to it.sdkVersion,
+                      "signedString" to it.signedString,
+                      "systemToken" to it.systemToken,
+                      "tags" to it.tags,
+                      "timeZone" to it.timeZone
+                    )
+                  ))
+                }
+              }
+
+
+              mp.registrationManager.registerForRegistrationEvents(listener)
+              registrationListener = listener
+            }
+          }
+        }
       }
     }
 
@@ -233,6 +273,18 @@ class ExpoMarketingCloudSdkModule : Module() {
           whenPushModuleReady(null) { mp ->
             try {
               mp.inboxMessageManager.unregisterInboxResponseListener(listener)
+            } catch (ex: Throwable) {
+              throw ex
+            }
+          }
+        }
+
+        val listener2 = registrationListener
+        if (listener2 != null) {
+          registrationListener = null
+          whenPushModuleReady(null) { mp ->
+            try {
+              mp.registrationManager.unregisterForRegistrationEvents(listener2)
             } catch (ex: Throwable) {
               throw ex
             }
