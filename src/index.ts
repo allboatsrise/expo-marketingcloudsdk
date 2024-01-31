@@ -134,4 +134,4 @@ export function addRegistrationResponseSucceededListener(listener: (event: Regis
   return emitter.addListener<RegistrationResponseSucceededPayload>('onRegistrationResponseSucceeded', listener)
 }
 
-export { LogEventPayload, InboxResponsePayload, InboxMessage }
+export { LogEventPayload, InboxResponsePayload, InboxMessage, RegistrationResponseSucceededPayload }
