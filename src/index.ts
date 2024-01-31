@@ -1,7 +1,7 @@
 import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
 
 import ExpoMarketingCloudSdkModule from './ExpoMarketingCloudSdkModule';
-import { InboxResponsePayload, LogEventPayload, InboxMessage } from './ExpoMarketingCloudSdk.types';
+import { InboxResponsePayload, LogEventPayload, InboxMessage, RegistrationResponseSucceededPayload } from './ExpoMarketingCloudSdk.types';
 
 export async function isPushEnabled(): Promise<boolean> {
   return await ExpoMarketingCloudSdkModule.isPushEnabled();
@@ -59,9 +59,8 @@ export async function getContactKey(): Promise<string | null> {
   return await ExpoMarketingCloudSdkModule.getContactKey();
 }
 
-export async function getSdkState(): Promise<Record<string, unknown>> {
-  const state: string = await ExpoMarketingCloudSdkModule.getSdkState();
-  return JSON.parse(state);
+export async function getSdkState(): Promise<string> {
+  return await ExpoMarketingCloudSdkModule.getSdkState();
 }
 
 export async function track(name: string, attributes: Record<string, string>): Promise<true> {
@@ -131,4 +130,8 @@ export function addInboxResponseListener(listener: (event: InboxResponsePayload)
   return emitter.addListener<InboxResponsePayload>('onInboxResponse', listener)
 }
 
-export { LogEventPayload, InboxResponsePayload, InboxMessage }
+export function addRegistrationResponseSucceededListener(listener: (event: RegistrationResponseSucceededPayload) => void): Subscription {
+  return emitter.addListener<RegistrationResponseSucceededPayload>('onRegistrationResponseSucceeded', listener)
+}
+
+export { LogEventPayload, InboxResponsePayload, InboxMessage, RegistrationResponseSucceededPayload }

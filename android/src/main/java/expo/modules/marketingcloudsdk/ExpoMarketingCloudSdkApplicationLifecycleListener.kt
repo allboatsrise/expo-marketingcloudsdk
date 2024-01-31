@@ -21,6 +21,14 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
       SFMCSdk.setLogging(LogLevel.DEBUG, LogListener.AndroidLogger())
       MarketingCloudSdk.setLogLevel(MCLogListener.VERBOSE)
       MarketingCloudSdk.setLogListener(MCLogListener.AndroidLogListener())
+      SFMCSdk.requestSdk { sdk ->
+        sdk.mp { push ->
+          push.registrationManager.registerForRegistrationEvents {
+            // Log the registration on successful sends to the MC
+            Log.i("~#SFMC-expo", "Registration: $it")
+          }
+        }
+      }
     }
 
     // Configure Salesforce Marketing Cloud SDK

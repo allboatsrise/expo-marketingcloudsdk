@@ -31,3 +31,33 @@ export type InboxMessage = {
 export type InboxResponsePayload = {
   messages: InboxMessage[]
 }
+
+export type RegistrationResponseSucceededPayload = {
+  response: {
+    "quietPushEnabled" : boolean,
+    "location_Enabled" : boolean,
+    "registrationId" : string,
+    "timeZone" : string,
+    "locale" : string,
+    "etAppId" : string,
+    "attributes" : Array<
+      {
+        "key" : string,
+        "value" : string
+      }
+    >,
+    "proximity_Enabled" : boolean,
+    "subscriberKey" : string,
+    "platform" : string,
+    "sdk_Version" : string,
+    "language" : string,
+    "app_Version" : string,
+    "deviceID" : string,
+    "tags" : string[],
+    "hwid" : string,
+    "push_Enabled" : boolean,
+    "device_Token" : string,
+    "dST" : boolean,
+    "platform_Version" : string
+  }
+}
