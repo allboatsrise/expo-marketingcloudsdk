@@ -35,6 +35,7 @@ Add package to `plugins` in `app.js`/`app.config.js`.
     [
       "expo-build-properties", {
         "android": {
+          "minSdkVersion": 24,
           "compileSdkVersion": 34,
         }
       }
