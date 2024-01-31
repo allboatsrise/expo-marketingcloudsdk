@@ -32,7 +32,70 @@ Add package to `plugins` in `app.js`/`app.config.js`.
       }
     ],
     "expo-notifications",
+    [
+      "expo-build-properties", {
+        "android": {
+          "compileSdkVersion": 34,
+        }
+      }
+    ]
   ]
+}
+```
+
+Sample initialization of notifications in the app
+
+```typescript
+import * as Notifications from 'expo-notifications'
+import * as MarketingCloud from '@allboatsrise/expo-marketingcloudsdk'
+
+// ensure push notifications appear regardless whether app is active or not
+Notifications.setNotificationHandler({
+  handleNotification: async (_notification) => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }
+  },
+})
+
+export const App: React.FC = () => {
+  useEffect(() => {
+    let cleanup = () => {}
+
+    ;(async () => {
+      // request push notifications permission on load
+      // ideally: show this elsewhere where it's more relevant instead of as soon as when the ap loads
+      let result = await Notifications.getPermissionsAsync()
+      if (!result.granted && result.canAskAgain) {
+        result = await Notifications.requestPermissionsAsync({
+          ios: {
+            allowAlert: true,
+            allowBadge: true,
+            allowSound: true,
+          },
+        })
+      }
+
+      if (!result.granted) return
+
+      const token = await Notifications.getDevicePushTokenAsync()
+
+      // let Marketing Cloud SDK the value of current push token
+      MarketingCloud.setSystemToken(token.data)
+
+      // In rare situations a push token may be changed by the push notification service while the app is running.
+      const subscription = Notifications.addPushTokenListener((newToken) => {
+        MarketingCloud.setSystemToken(newToken.data)
+      })
+      cleanup = () => subscription.remove()
+    })()
+
+    return () => cleanup()
+  }, [])
+
+  // remaining app logic...
 }
 ```
 
@@ -89,8 +152,9 @@ Available event listeners:
 
 | Function | Parameters | Description |
 | --- | --- | --- |
-| `addLogListener` | `listener: (event: LogEventPayload) => void` | Adds a listener function to the `onLog` event, which is triggered when a new log event is generated. The function should take an argument of type `LogEventPayload`, which contains information about the log event. Returns a `Subscription` object that can be used to unsubscribe the listener. |
-| `addInboxResponseListener` | `listener: (event: InboxResponsePayload) => void` | Adds a listener function to the `onInboxResponse` event, which is triggered when a new inbox response is received. The function should take an argument of type `InboxResponsePayload`, which contains information about the inbox response. Returns a `Subscription` object that can be used to unsubscribe the listener. |
+| `addLogListener` | `listener: (event: LogEventPayload) => void` | Adds a listener function to the `onLog` event, which is triggered when a new log event is generated. |
+| `addInboxResponseListener` | `listener: (event: InboxResponsePayload) => void` | Adds a listener function to the `onInboxResponse` event, which is triggered when a new inbox response is received. |
+| `addRegistrationResponseSucceededListener` | `listener: (event: RegistrationResponseSucceededPayload) => void` | Adds a listener function to the `onRegistrationResponseSucceeded` event, which is triggered when SDK successfully registers with backend. |
 
 ```typescript
 // listeners being used in a useEffect hook.
