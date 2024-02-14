@@ -3,9 +3,9 @@ import {
   withInfoPlist,
 } from '@expo/config-plugins';
 
-import { MarketingCloudSdkPluginProps } from '../types';
+import { MarketingCloudSdkPluginValidProps } from '../types';
 
-export const withIOSConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (
+export const withIOSConfig: ConfigPlugin<MarketingCloudSdkPluginValidProps> = (
   config,
   props
 ) => {
@@ -15,22 +15,23 @@ export const withIOSConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (
   return config;
 };
 
-const withInfo: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+const withInfo: ConfigPlugin<MarketingCloudSdkPluginValidProps> = (config, props) => {
   return withInfoPlist(config, (config) => {
+    config.modResults.SFMCDebug = props.debug
     config.modResults.SFMCAccessToken = props.accessToken
-    config.modResults.SFMCAnalyticsEnabled = props.analyticsEnabled ?? false
+    config.modResults.SFMCAnalyticsEnabled = props.analyticsEnabled
     config.modResults.SFMCApplicationId = props.appId
-    config.modResults.SFMCApplicationControlsBadging = props.applicationControlsBadging ?? false
-    config.modResults.SFMCDelayRegistrationUntilContactKeyIsSet = props.delayRegistrationUntilContactKeyIsSet ?? false
-    config.modResults.SFMCInboxEnabled = props.inboxEnabled ?? false
-    config.modResults.SFMCLocationEnabled = props.locationEnabled ?? false
+    config.modResults.SFMCApplicationControlsBadging = props.applicationControlsBadging
+    config.modResults.SFMCDelayRegistrationUntilContactKeyIsSet = props.delayRegistrationUntilContactKeyIsSet
+    config.modResults.SFMCInboxEnabled = props.inboxEnabled
+    config.modResults.SFMCLocationEnabled = props.locationEnabled
     config.modResults.SFMCMid = props.mid ?? ''
     config.modResults.SFMCServerUrl = props.serverUrl
     return config
   })
 }
 
-const withRemoteNotificationsBackgroundMode: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+const withRemoteNotificationsBackgroundMode: ConfigPlugin<MarketingCloudSdkPluginValidProps> = (config, props) => {
   config = withInfoPlist(config, (config) => {
     if (!Array.isArray(config.modResults.UIBackgroundModes)) {
       config.modResults.UIBackgroundModes = [];
