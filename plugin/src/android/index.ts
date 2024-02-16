@@ -1,8 +1,8 @@
 import { ConfigPlugin, AndroidConfig, withStringsXml, withProjectBuildGradle, withAppBuildGradle} from '@expo/config-plugins';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
-import { MarketingCloudSdkPluginProps } from '../types';
+import { MarketingCloudSdkPluginValidProps } from '../types';
 
-export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginValidProps> = (config, props) => {
   // Add Marketing Cloud SDK repository
   config = withConfigureRepository(config, props)
 
@@ -12,7 +12,7 @@ export const withAndroidConfig: ConfigPlugin<MarketingCloudSdkPluginProps> = (co
   return config;
 };
 
-const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (config) => {
+const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginValidProps> = (config) => {
   config = withProjectBuildGradle(config, async config => {
     config.modResults.contents = mergeContents({
       src: config.modResults.contents,
@@ -40,12 +40,13 @@ const withConfigureRepository: ConfigPlugin<MarketingCloudSdkPluginProps> = (con
   })
 }
 
-const withConfiguration: ConfigPlugin<MarketingCloudSdkPluginProps> = (config, props) => {
+const withConfiguration: ConfigPlugin<MarketingCloudSdkPluginValidProps> = (config, props) => {
     return withStringsXml(config, config => {
       // Helper to add string.xml JSON items or overwrite existing items with the same name.
       config.modResults = AndroidConfig.Strings.setStringItem(
         [
           // XML represented as JSON
+          { $: { name: 'expo_marketingcloudsdk_debug', translatable: 'false' }, _: props.debug ? 'true' : 'false' },
           { $: { name: 'expo_marketingcloudsdk_app_id', translatable: 'false' }, _: props.appId },
           { $: { name: 'expo_marketingcloudsdk_access_token', translatable: 'false' }, _: props.accessToken },
           { $: { name: 'expo_marketingcloudsdk_server_url', translatable: 'false' }, _: props.serverUrl },

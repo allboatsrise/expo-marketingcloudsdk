@@ -17,7 +17,7 @@ import expo.modules.core.interfaces.ApplicationLifecycleListener
 class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
     // Initialize logging _before_ initializing the SDK to avoid losing valuable debugging information.
-    if(BuildConfig.DEBUG) {
+    if(getDebug(application)) {
       SFMCSdk.setLogging(LogLevel.DEBUG, LogListener.AndroidLogger())
       MarketingCloudSdk.setLogLevel(MCLogListener.VERBOSE)
       MarketingCloudSdk.setLogListener(MCLogListener.AndroidLogListener())
@@ -52,6 +52,7 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
     }
   }
   
+  private fun getDebug(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_debug) == "true"
   private fun getAppId(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_app_id)
   private fun getAccessToken(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_access_token)
   private fun getServerUrl(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_server_url)

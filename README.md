@@ -6,20 +6,20 @@ It allows Expo-based apps to integrate with the Marketing Cloud SDK.
 
 ## Installation
 
-To install the package use your prefered package manager:
+To install the package use your preferred package manager:
 
 ```bash
-npm install @allboatsrise/expo-marketingcloudsdk expo-notifications
+npm install @allboatsrise/expo-marketingcloudsdk expo-notifications zod
 ```
 or
 ```bash
-yarn add @allboatsrise/expo-marketingcloudsdk expo-notifications
+yarn add @allboatsrise/expo-marketingcloudsdk expo-notifications zod
 ```
 
 ## Plugin setup
 #### [View parameters](#plugin-parameters)
 
-Add package to `plugins` in `app.js`/`app.config.js`.
+Add package to `plugins` in `app.js`/`app.config.js` with minimal configuration.
 
 ```json
 "expo": {
@@ -31,16 +31,8 @@ Add package to `plugins` in `app.js`/`app.config.js`.
         "serverUrl": "<< MARKETING_CLOUD_SERVER_URL >>",
       }
     ],
-    "expo-notifications",
-    [
-      "expo-build-properties", {
-        "android": {
-          "minSdkVersion": 24,
-          "compileSdkVersion": 34,
-        }
-      }
+    "expo-notifications"
     ]
-  ]
 }
 ```
 
@@ -115,6 +107,7 @@ export const App: React.FC = () => {
 | `applicationControlsBadging`                  | boolean | No       | Sets the configuration value which enables or disables application control over badging                                                             |
 | `delayRegistrationUntilContactKeyIsSet`       | boolean | No       | Sets the configuration value which enables or disables application control over delaying SDK registration until a contact key is set                |
 | `markNotificationReadOnInboxNotificationOpen` | boolean | No       | Sets the configuration value which enables or disables marking inbox notifications as read on open (Android only)                                   |
+| `debug`                                       | boolean | No       | Enable logging debug messages                                                                                                                       |
 
 # Usage
 
@@ -164,13 +157,19 @@ useEffect(() => {
     const logSubscription = addLogListener((logEvent: LogEventPayload) => {
         // Do something with logEvent
       })
-    const inboxSubscription = addInboxResponseListener((inboxEvent: InboxMessage[]) => {
+
+    const inboxSubscription = addInboxResponseListener((inboxEvent: InboxResponsePayload) => {
         // Do something with inboxEvent
       })
+
+    const registrationSubscription = MarketingCloud.addRegistrationResponseSucceededListener((registrationEvent: RegistrationResponseSucceededPayload) => {
+      // Do something with registrationEvent
+    })
 
     return () => {
       logSubscription.remove()
       inboxSubscription.remove()
+      registrationSubscription.remove()
     }
 }, [])
 ```

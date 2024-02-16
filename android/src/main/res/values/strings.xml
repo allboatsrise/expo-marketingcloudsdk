@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="expo_marketingcloudsdk_debug" translatable="false">false</string>
     <string name="expo_marketingcloudsdk_app_id" translatable="false"></string>
     <string name="expo_marketingcloudsdk_access_token" translatable="false"></string>
     <string name="expo_marketingcloudsdk_server_url" translatable="false"></string>

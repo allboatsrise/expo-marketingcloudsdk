@@ -6,13 +6,8 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
   private var notificationDelegate: ExpoMarketingCloudSdkNotificationsDelegate?
   
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    
-    // Enable logging for debugging early on. Debug level is not recommended for production apps, as significant data
-    // about the MobilePush will be logged to the console.
-    #if DEBUG
-    SFMCSdk.setLogger(logLevel: .debug)
-    #endif
-    
+
+    let debug = Bundle.main.object(forInfoDictionaryKey: "SFMCDebug") as? Bool ?? false;
     let accessToken = Bundle.main.object(forInfoDictionaryKey: "SFMCAccessToken") as! String
     let analyticsEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCAnalyticsEnabled") as? Bool ?? false;
     let appId = Bundle.main.object(forInfoDictionaryKey: "SFMCApplicationId") as! String
@@ -21,6 +16,12 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
     let locationEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCLocationEnabled") as? Bool ?? false;
     let mid = Bundle.main.object(forInfoDictionaryKey: "SFMCMid") as? String;
     let serverUrl = URL(string: Bundle.main.object(forInfoDictionaryKey: "SFMCServerUrl") as! String)!;
+
+    if (debug) {
+      // Enable logging for debugging early on. Debug level is not recommended for production apps, as significant data
+      // about the MobilePush will be logged to the console.
+      SFMCSdk.setLogger(logLevel: .debug)
+    }
     
     // Use the Mobile Push Config Builder to configure the Mobile Push Module. This gives you the maximum flexibility in SDK configuration.
     // The builder lets you configure the module parameters at runtime.
@@ -58,7 +59,6 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
             
     // Once you've created the mobile push configuration, intialize the SDK.
     SFMCSdk.initializeSdk(ConfigBuilder().setPush(config: mobilePushBuilder.build(), onCompletion: completionHandler).build())
-
     
     return true
   }

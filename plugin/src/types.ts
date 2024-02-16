@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-export type MarketingCloudSdkPluginProps = z.infer<typeof MarketingCloudSDKPluginPropsSchema>
+export type MarketingCloudSdkPluginProps = z.input<typeof MarketingCloudSDKPluginPropsSchema>
+export type MarketingCloudSdkPluginValidProps = z.output<typeof MarketingCloudSDKPluginPropsSchema>
 
 export const MarketingCloudSDKPluginPropsSchema = z.object({
   /** Marketing Cloud app id */
@@ -11,6 +12,9 @@ export const MarketingCloudSDKPluginPropsSchema = z.object({
 
   /** Marketing Cloud server url */
   serverUrl: z.string({required_error: 'Must provide server url.'}).url({message: 'Invalid server url.'}),
+
+  /** Enable logging debug messages */
+  debug: z.boolean().optional().default(false),
 
   /**
    * (Android only) Marketing Cloud FCM sender id. Defaults to `project_info.project_number`
@@ -26,27 +30,27 @@ export const MarketingCloudSDKPluginPropsSchema = z.object({
   /**
    * Sets the configuration flag that enables or disables inbox services
    */
-  inboxEnabled: z.boolean().optional(),
+  inboxEnabled: z.boolean().optional().default(false),
 
   /**
    * Sets the configuration flag that enables or disables location services
    */
-  locationEnabled: z.boolean().optional(),
+  locationEnabled: z.boolean().optional().default(false),
 
   /**
    * Sets the configuration flag that enables or disables Salesforce MarketingCloud Analytics services
    */
-  analyticsEnabled: z.boolean().optional(),
+  analyticsEnabled: z.boolean().optional().default(true),
 
   /**
    * Sets the configuration value which enables or disables application control over badging
    */
-  applicationControlsBadging: z.boolean().optional(),
+  applicationControlsBadging: z.boolean().optional().default(false),
 
   /**
    * Sets the configuration value which enables or disables application control over delaying SDK registration until a contact key is set
    */
-  delayRegistrationUntilContactKeyIsSet: z.boolean().optional(),
+  delayRegistrationUntilContactKeyIsSet: z.boolean().optional().default(false),
 
-  markNotificationReadOnInboxNotificationOpen: z.boolean().optional(),
+  markNotificationReadOnInboxNotificationOpen: z.boolean().optional().default(false),
 }, {required_error: 'Must configure plugin options.'})
