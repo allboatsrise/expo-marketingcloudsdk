@@ -331,6 +331,14 @@ class ExpoMarketingCloudSdkModule : Module() {
             }
           }
         } else null,
+        "customKeys" to if (it.customKeys != null) {
+          buildMap<String, String> {
+            var obj = JSONObject(it.customKeys)
+            obj.keys().forEach {
+              put(it, obj.getString(it))
+            }
+          }
+        } else null,
         "deleted" to it.deleted,
         "endDateUtc" to if (it.endDateUtc != null) dateFormatter.format(it.endDateUtc) else null,
         "media" to if (media != null) mapOf(
