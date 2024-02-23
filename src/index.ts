@@ -119,6 +119,10 @@ export async function setMessageRead(messageId: string): Promise<void> {
   await ExpoMarketingCloudSdkModule.setMessageRead(messageId);
 }
 
+export async function trackMessageOpened(messageId: string): Promise<boolean> {
+  return await ExpoMarketingCloudSdkModule.trackMessageOpened(messageId);
+}
+
 
 const emitter = new EventEmitter(ExpoMarketingCloudSdkModule ?? NativeModulesProxy.ExpoMarketingCloudSdk);
 

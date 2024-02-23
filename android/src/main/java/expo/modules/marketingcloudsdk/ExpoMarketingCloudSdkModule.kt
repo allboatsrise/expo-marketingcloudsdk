@@ -179,6 +179,16 @@ class ExpoMarketingCloudSdkModule : Module() {
       whenPushModuleReady(promise) {mp -> promise.resolve(mp.inboxMessageManager.setMessageRead(messageId))}
     }
 
+    AsyncFunction("trackMessageOpened") { messageId: String, promise: Promise ->
+      whenPushModuleReady(promise) {mp ->
+        val message = mp.inboxMessageManager.messages.find { m -> m.id === messageId }
+        if (message != null) {
+          mp.analyticsManager.trackInboxOpenEvent(message)
+        }
+        promise.resolve(message != null)
+      }
+    }
+
     Function("addListener") {eventName: String ->
       numberOfListeners++
 
