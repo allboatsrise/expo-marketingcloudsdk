@@ -12,7 +12,7 @@ export type Media = {
 }
 
 export type InboxMessage = {
-  /** Inbox Message Title */
+  /** Push notification message body */
   alert: string
   /** Custom payload defined via POST /push/v1/messageContact/{messageId}/send */
   custom: Record<string, unknown> | null
@@ -26,7 +26,7 @@ export type InboxMessage = {
   read: boolean
   sendDateUtc: string
   sound: 'default' | 'custom.caf' | null
-  /** Push notification message body */
+  /** Inbox Message Title */
   subject: string | null
   /** Push notification title */
   title: string | null
