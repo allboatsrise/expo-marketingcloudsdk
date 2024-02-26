@@ -241,6 +241,25 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
         promise.resolve(mp.markMessageWithIdRead(messageId: messageId))
       }
     }
+    
+    AsyncFunction("trackMessageOpened") { (messageId: String, promise: Promise) in
+      SFMCSdk.requestPushSdk { mp in
+        let messages = mp.getAllMessages()
+        
+        if let messages = messages {
+          let message = (messages as! [[AnyHashable : Any]]).first(where: {mp.messageId(forMessage: $0) == messageId })
+          
+          if let message = message {
+            mp.trackMessageOpened(message)
+            promise.resolve(true)
+          } else {
+            promise.resolve(false)
+          }
+        } else {
+          promise.resolve(false)
+        }
+      }
+    }
   }
   
   @objc
