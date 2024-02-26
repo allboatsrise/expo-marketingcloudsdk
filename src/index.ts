@@ -75,7 +75,7 @@ export async function getDeletedMessageCount(): Promise<number> {
   return await ExpoMarketingCloudSdkModule.getDeletedMessageCount();
 }
 
-export async function getDeletedMessages(): Promise<InboxMessage[] | null> {
+export async function getDeletedMessages(): Promise<InboxMessage[]> {
   return await ExpoMarketingCloudSdkModule.getDeletedMessages();
 }
 
@@ -83,7 +83,7 @@ export async function getMessageCount(): Promise<number> {
   return await ExpoMarketingCloudSdkModule.getMessageCount();
 }
 
-export async function getMessages(): Promise<InboxMessage[] | null> {
+export async function getMessages(): Promise<InboxMessage[]> {
   return await ExpoMarketingCloudSdkModule.getMessages();
 }
 
@@ -91,7 +91,7 @@ export async function getReadMessageCount(): Promise<number> {
   return await ExpoMarketingCloudSdkModule.getReadMessageCount();
 }
 
-export async function getReadMessages(): Promise<InboxMessage[] | null> {
+export async function getReadMessages(): Promise<InboxMessage[]> {
   return await ExpoMarketingCloudSdkModule.getReadMessages();
 }
 
@@ -99,7 +99,7 @@ export async function getUnreadMessageCount(): Promise<number> {
   return await ExpoMarketingCloudSdkModule.getUnreadMessageCount();
 }
 
-export async function getUnreadMessages(): Promise<InboxMessage[] | null> {
+export async function getUnreadMessages(): Promise<InboxMessage[]> {
   return await ExpoMarketingCloudSdkModule.getUnreadMessages();
 }
 
