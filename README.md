@@ -139,6 +139,7 @@ Various functions, their parameters, return values, and their specific purposes 
 | `getMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the inbox messages. |
 | `getReadMessageCount` | None | `Promise<number>` | Returns a promise that resolves to a number representing the total number of read inbox messages. |
 | `getReadMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the read inbox messages. |
+| `trackMessageOpened` | `messageId`: string | Promise<boolean> | Returns a promise that resolves to true when inbox open event successfully triggered on message. |
 
 
 ## Add event listener
