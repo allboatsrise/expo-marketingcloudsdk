@@ -308,7 +308,7 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
           "endDateUtc": endDateUtc != nil ? dateFormatter.string(from: endDateUtc!) : nil,
           "id": message["id"],
           "media": mediaUrl != nil ? ["url": mediaUrl, "altText": mediaAltText] : nil,
-          "read": message["deleted"] as? Int == 0 ? false : true,
+          "read": message["read"] as? Int == 0 ? false : true,
           "sendDateUtc": sendDateUtc != nil ? dateFormatter.string(from: sendDateUtc!) : nil,
           "sound": message["sound"],
           "startDateUtc": startDateUtc != nil ? dateFormatter.string(from: startDateUtc!) : nil,
