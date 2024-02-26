@@ -27,6 +27,7 @@ const withInfo: ConfigPlugin<MarketingCloudSdkPluginValidProps> = (config, props
     config.modResults.SFMCLocationEnabled = props.locationEnabled
     config.modResults.SFMCMid = props.mid ?? ''
     config.modResults.SFMCServerUrl = props.serverUrl
+    config.modResults.SFMCMarkNotificationReadOnInboxNotificationOpen = props.markNotificationReadOnInboxNotificationOpen
     return config
   })
 }

@@ -106,7 +106,7 @@ export const App: React.FC = () => {
 | `analyticsEnabled`                            | boolean | No       | Sets the configuration flag that enables or disables Salesforce MarketingCloud Analytics services                                                   |
 | `applicationControlsBadging`                  | boolean | No       | Sets the configuration value which enables or disables application control over badging                                                             |
 | `delayRegistrationUntilContactKeyIsSet`       | boolean | No       | Sets the configuration value which enables or disables application control over delaying SDK registration until a contact key is set                |
-| `markNotificationReadOnInboxNotificationOpen` | boolean | No       | Sets the configuration value which enables or disables marking inbox notifications as read on open (Android only)                                   |
+| `markNotificationReadOnInboxNotificationOpen` | boolean | No       | Sets the configuration value which enables or disables marking inbox notifications as read on open                                   |
 | `debug`                                       | boolean | No       | Enable logging debug messages                                                                                                                       |
 
 # Usage
