@@ -169,7 +169,7 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
 
     AsyncFunction("getDeletedMessages") { (promise: Promise) in
       SFMCSdk.requestPushSdk { mp in
-        promise.resolve(mp.getDeletedMessages())
+        promise.resolve(self.messagesToJSValue(messages: mp.getDeletedMessages()))
       }
     }
 
@@ -181,7 +181,7 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
 
     AsyncFunction("getMessages") { (promise: Promise) in
       SFMCSdk.requestPushSdk { mp in
-        promise.resolve(mp.getAllMessages())
+        promise.resolve(self.messagesToJSValue(messages: mp.getAllMessages()))
       }
     }
 
@@ -193,7 +193,7 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
 
     AsyncFunction("getReadMessages") { (promise: Promise) in
       SFMCSdk.requestPushSdk { mp in
-        promise.resolve(mp.getReadMessages())
+        promise.resolve(self.messagesToJSValue(messages: mp.getReadMessages()))
       }
     }
 
@@ -205,7 +205,7 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
 
     AsyncFunction("getUnreadMessages") { (promise: Promise) in
       SFMCSdk.requestPushSdk { mp in
-        promise.resolve(mp.getUnreadMessages())
+        promise.resolve(self.messagesToJSValue(messages: mp.getUnreadMessages()))
       }
     }
 
@@ -264,25 +264,61 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
   
   @objc
   private func inboxMessagesNewInboxMessagesListener() {
-    sendEvent("onInboxResponse", [
-      "messages": []
-    ])
+    SFMCSdk.requestPushSdk { mp in
+      self.sendEvent("onInboxResponse", [
+        "messages": self.messagesToJSValue(messages: mp.getAllMessages())
+      ])
+    }
   }
   
-  @objc func inboxMessagesRefreshCompleteListener() {
+  @objc
+  private func inboxMessagesRefreshCompleteListener() {
     if (self.refreshInboxPromise != nil) {
       self.refreshInboxPromise!.resolve(true)
       self.refreshInboxPromise = nil
     }
   }
   
-  @objc
-  func onLog(level: LogLevel, subsystem: String, category: LoggerCategory, message: String) {
+  internal func onLog(level: LogLevel, subsystem: String, category: LoggerCategory, message: String) {
     sendEvent("onLog", [
       "level": level.rawValue,
       "subsystem": subsystem,
       "category": category.rawValue,
       "message": message
     ])
+  }
+  
+  private func messagesToJSValue(messages: [Any]?) -> [[AnyHashable : Any?]] {
+    if let messages = messages {
+      let dateFormatter = ISO8601DateFormatter()
+      
+      return (messages as! [NSDictionary]).map {message in
+        let endDateUtc = message["endDateUtc"] as? Date
+        let sendDateUtc = message["sendDateUtc"] as? Date
+        let startDateUtc = message["startDateUtc"] as? Date
+        let keys = message["keys"] as? [[AnyHashable : Any]]
+        let mediaUrl = message["media.url"] as? String
+        let mediaAltText = message["media.altText"] as? String
+        
+        return [
+          "alert": message["alert"],
+          "custom": message["custom"],
+          "customKeys": keys != nil ? Dictionary(uniqueKeysWithValues: keys!.map{ ($0["key"] as? String, $0["value"] as? String)}) : [],
+          "deleted": message["deleted"] as? Int == 0 ? false : true,
+          "endDateUtc": endDateUtc != nil ? dateFormatter.string(from: endDateUtc!) : nil,
+          "id": message["id"],
+          "media": mediaUrl != nil ? ["url": mediaUrl, "altText": mediaAltText] : nil,
+          "read": message["deleted"] as? Int == 0 ? false : true,
+          "sendDateUtc": sendDateUtc != nil ? dateFormatter.string(from: sendDateUtc!) : nil,
+          "sound": message["sound"],
+          "startDateUtc": startDateUtc != nil ? dateFormatter.string(from: startDateUtc!) : nil,
+          "subject": message["subject"],
+          "subtitle":message["subtitle"],
+          "title":message["title"],
+          "url":message["url"],
+      ]}
+    } else {
+      return []
+    }
   }
 }
