@@ -106,7 +106,7 @@ export const App: React.FC = () => {
 | `analyticsEnabled`                            | boolean | No       | Sets the configuration flag that enables or disables Salesforce MarketingCloud Analytics services                                                   |
 | `applicationControlsBadging`                  | boolean | No       | Sets the configuration value which enables or disables application control over badging                                                             |
 | `delayRegistrationUntilContactKeyIsSet`       | boolean | No       | Sets the configuration value which enables or disables application control over delaying SDK registration until a contact key is set                |
-| `markNotificationReadOnInboxNotificationOpen` | boolean | No       | Sets the configuration value which enables or disables marking inbox notifications as read on open (Android only)                                   |
+| `markNotificationReadOnInboxNotificationOpen` | boolean | No       | Sets the configuration value which enables or disables marking inbox notifications as read on open                                   |
 | `debug`                                       | boolean | No       | Enable logging debug messages                                                                                                                       |
 
 # Usage
@@ -139,6 +139,7 @@ Various functions, their parameters, return values, and their specific purposes 
 | `getMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the inbox messages. |
 | `getReadMessageCount` | None | `Promise<number>` | Returns a promise that resolves to a number representing the total number of read inbox messages. |
 | `getReadMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the read inbox messages. |
+| `trackMessageOpened` | `messageId`: string | Promise<boolean> | Returns a promise that resolves to true when inbox open event successfully triggered on message. |
 
 
 ## Add event listener

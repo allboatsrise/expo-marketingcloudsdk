@@ -16,6 +16,7 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
     let locationEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCLocationEnabled") as? Bool ?? false;
     let mid = Bundle.main.object(forInfoDictionaryKey: "SFMCMid") as? String;
     let serverUrl = URL(string: Bundle.main.object(forInfoDictionaryKey: "SFMCServerUrl") as! String)!;
+    let markMessageReadOnInboxNotificationOpen = Bundle.main.object(forInfoDictionaryKey: "SFMCMarkNotificationReadOnInboxNotificationOpen") as? Bool ?? false;
 
     if (debug) {
       // Enable logging for debugging early on. Debug level is not recommended for production apps, as significant data
@@ -32,6 +33,7 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
         .setLocationEnabled(locationEnabled)
         .setAnalyticsEnabled(analyticsEnabled)
         .setDelayRegistrationUntilContactKeyIsSet(delayRegistrationUntilContactKeyIsSet)
+        .setMarkMessageReadOnInboxNotificationOpen(markMessageReadOnInboxNotificationOpen)
     
     if let mid {
       mobilePushBuilder = mobilePushBuilder.setMid(mid)

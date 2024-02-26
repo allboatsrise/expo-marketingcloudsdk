@@ -14,7 +14,7 @@ import com.salesforce.marketingcloud.registration.RegistrationManager.Registrati
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import org.json.JSONObject
+import kotlinx.serialization.json.*
 import java.text.SimpleDateFormat
 
 
@@ -179,6 +179,16 @@ class ExpoMarketingCloudSdkModule : Module() {
       whenPushModuleReady(promise) {mp -> promise.resolve(mp.inboxMessageManager.setMessageRead(messageId))}
     }
 
+    AsyncFunction("trackMessageOpened") { messageId: String, promise: Promise ->
+      whenPushModuleReady(promise) {mp ->
+        val message = mp.inboxMessageManager.messages.find { m -> m.id === messageId }
+        if (message != null) {
+          mp.analyticsManager.trackInboxOpenEvent(message)
+        }
+        promise.resolve(message != null)
+      }
+    }
+
     Function("addListener") {eventName: String ->
       numberOfListeners++
 
@@ -305,22 +315,17 @@ class ExpoMarketingCloudSdkModule : Module() {
   }
 
   private fun messagesToJSValue(messages: List<InboxMessage>): List<Map<String, Any?>> {
-    val dateFormatter =  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
     return messages.map {
       var media = it.media
+      var custom = it.custom
 
       mapOf(
         "id" to it.id,
         "alert" to it.alert,
-        "custom" to if (it.custom != null) {
-          buildMap<String, String> {
-            var obj = JSONObject(it.custom)
-            obj.keys().forEach {
-              put(it, obj.getString(it))
-            }
-          }
-        } else null,
+        "custom" to if (custom != null) Json.decodeFromString(ExpoMarketingCloudSdkKotlinxGenericMapSerializer, custom) else null,
+        "customKeys" to it.customKeys,
         "deleted" to it.deleted,
         "endDateUtc" to if (it.endDateUtc != null) dateFormatter.format(it.endDateUtc) else null,
         "media" to if (media != null) mapOf(
