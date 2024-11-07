@@ -48,6 +48,7 @@ const withConfiguration: ConfigPlugin<MarketingCloudSdkPluginValidProps> = (conf
           // XML represented as JSON
           { $: { name: 'expo_marketingcloudsdk_debug', translatable: 'false' }, _: props.debug ? 'true' : 'false' },
           { $: { name: 'expo_marketingcloudsdk_app_id', translatable: 'false' }, _: props.appId },
+          { $: { name: 'expo_marketingcloudsdk_mid', translatable: 'false' }, _: props.mid ?? '' },
           { $: { name: 'expo_marketingcloudsdk_access_token', translatable: 'false' }, _: props.accessToken },
           { $: { name: 'expo_marketingcloudsdk_server_url', translatable: 'false' }, _: props.serverUrl },
           { $: { name: 'expo_marketingcloudsdk_sender_id', translatable: 'false' }, _: props.senderId ?? '' },

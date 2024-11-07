@@ -35,6 +35,7 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
     SFMCSdk.configure(application, SFMCSdkModuleConfig.build {
       pushModuleConfig = MarketingCloudConfig.builder().apply {
         setApplicationId(getAppId(application))
+        if(getMid(application) != "") setMid(getMid(application))
         setAccessToken(getAccessToken(application))
         setAnalyticsEnabled(getAnalyticsEnabled(application))
         setMarketingCloudServerUrl(getServerUrl(application))
@@ -54,6 +55,7 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
   
   private fun getDebug(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_debug) == "true"
   private fun getAppId(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_app_id)
+  private fun getMid(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_mid)
   private fun getAccessToken(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_access_token)
   private fun getServerUrl(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_server_url)
   private fun getSenderId(context: Context): String = context.resources.getString(R.string.expo_marketingcloudsdk_sender_id)
