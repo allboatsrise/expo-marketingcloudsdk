@@ -1,18 +1,21 @@
 package expo.modules.marketingcloudsdk
 
 import android.app.Application
+import android.app.PendingIntent
 import android.content.Context
 import android.util.Log
 import com.salesforce.marketingcloud.MCLogListener
 import com.salesforce.marketingcloud.MarketingCloudConfig
 import com.salesforce.marketingcloud.MarketingCloudSdk
 import com.salesforce.marketingcloud.notifications.NotificationCustomizationOptions
-import com.salesforce.marketingcloud.sfmcsdk.BuildConfig
+import com.salesforce.marketingcloud.notifications.NotificationManager
 import com.salesforce.marketingcloud.sfmcsdk.SFMCSdk
 import com.salesforce.marketingcloud.sfmcsdk.SFMCSdkModuleConfig
 import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogLevel
 import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogListener
 import expo.modules.core.interfaces.ApplicationLifecycleListener
+import kotlin.random.Random
+
 
 class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
@@ -44,7 +47,44 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
         setInboxEnabled(getInboxEnabled(application))
         setMarkMessageReadOnInboxNotificationOpen(getMarkMessageReadOnInboxNotificationOpen(application))
         setNotificationCustomizationOptions(
-                NotificationCustomizationOptions.create(R.drawable.notification_icon)
+          NotificationCustomizationOptions.create { context, notificationMessage ->
+            val builder = NotificationManager.getDefaultNotificationBuilder(
+              context,
+              notificationMessage,
+              NotificationManager.createDefaultNotificationChannel(context),
+              R.drawable.notification_icon
+            )
+            builder.setContentIntent(
+              NotificationManager.redirectIntentForAnalytics(
+                context,
+                PendingIntent.getActivity(
+                  context,
+                  Random.Default.nextInt(),
+                  context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                    putExtra("alert", notificationMessage.alert)
+                    putExtra("custom", notificationMessage.custom)
+                    putExtra("customKeys", HashMap(notificationMessage.customKeys))
+                    putExtra("id", notificationMessage.id)
+                    putExtra("mediaAltText", notificationMessage.mediaAltText)
+                    putExtra("mediaUrl", notificationMessage.mediaUrl)
+                    putExtra("payload", notificationMessage.payload?.let { HashMap(it) })
+                    putExtra("region", notificationMessage.region)
+                    putExtra("requestId", notificationMessage.requestId)
+                    putExtra("sound", notificationMessage.sound)
+                    putExtra("soundName", notificationMessage.soundName)
+                    putExtra("subtitle", notificationMessage.subtitle)
+                    putExtra("title", notificationMessage.title)
+                    putExtra("trigger", notificationMessage.trigger)
+                    putExtra("type", notificationMessage.type)
+                    putExtra("url", notificationMessage.url)
+                  },
+                  PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                ),
+                notificationMessage,
+                true
+              )
+            )
+          }
         )
       }.build(application)
     }) { initStatus ->
