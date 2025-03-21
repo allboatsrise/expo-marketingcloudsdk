@@ -3,6 +3,7 @@ package expo.modules.marketingcloudsdk
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import com.salesforce.marketingcloud.MCLogListener
 import com.salesforce.marketingcloud.MarketingCloudConfig
@@ -18,7 +19,6 @@ import kotlin.random.Random
 
 class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
-
     // Initialize logging _before_ initializing the SDK to avoid losing valuable debugging information.
     if(getDebug(application)) {
       SFMCSdk.setLogging(LogLevel.DEBUG, LogListener.AndroidLogger())
@@ -48,7 +48,6 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
         setMarkMessageReadOnInboxNotificationOpen(getMarkMessageReadOnInboxNotificationOpen(application))
         setNotificationCustomizationOptions(
           NotificationCustomizationOptions.create { context, notificationMessage ->
-            Log.d("ExpoMarketingCloudSdk", "Customizing notification: ${notificationMessage.messageId}")
             val builder = NotificationManager.getDefaultNotificationBuilder(
               context,
               notificationMessage,

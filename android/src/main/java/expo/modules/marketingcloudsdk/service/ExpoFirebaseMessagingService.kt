@@ -14,8 +14,6 @@ open class ExpoFirebaseMessagingService : ExpoFirebaseMessagingService() {
       Log.d("ExpoFirebaseMessagingService", "Message is identified as Marketing Cloud Push")
       
       SFMCSdk.requestSdk { sdk ->
-        Log.d("ExpoFirebaseMessagingService", "SFMCSdk requested")
-        
         sdk.mp {
           Log.d("ExpoFirebaseMessagingService", "Handling Marketing Cloud Push message")
           it.pushMessageManager.handleMessage(remoteMessage)
