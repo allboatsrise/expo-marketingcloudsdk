@@ -1,7 +1,7 @@
 {
   "name": "@hi3g-access/expo-marketingcloudsdk",
   "author": "Hi3G Access AB",
-  "version": "51.0.8",
+  "version": "51.0.9",
   "license": "MIT",
   "description": "Expo module for Salesforce Marketing Cloud SDK",
   
