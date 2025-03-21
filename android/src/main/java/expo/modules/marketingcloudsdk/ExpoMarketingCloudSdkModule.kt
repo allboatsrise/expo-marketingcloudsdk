@@ -1,6 +1,5 @@
 package expo.modules.marketingcloudsdk
 
-import android.util.Log
 import com.facebook.react.bridge.ReadableMap
 import com.salesforce.marketingcloud.InitializationStatus
 import com.salesforce.marketingcloud.MCLogListener
@@ -20,6 +19,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.serialization.json.*
 import java.text.SimpleDateFormat
 
+
 class ExpoMarketingCloudSdkModule : Module() {
   private var defaultLogLevel : Int = MCLogListener.WARN
   private var inboxResponseListener : InboxResponseListener? = null
@@ -38,29 +38,22 @@ class ExpoMarketingCloudSdkModule : Module() {
     Events("onLog", "onInboxResponse", "onRegistrationResponseSucceeded")
 
     AsyncFunction("isPushEnabled") { promise: Promise ->
-      Log.d("ExpoMarketingCloudSdk", "Checking if push is enabled")
-      whenPushModuleReady(promise) { mp -> 
-        val isEnabled = mp.pushMessageManager.isPushEnabled
-        Log.d("ExpoMarketingCloudSdk", "Push enabled: $isEnabled")
-        promise.resolve(isEnabled)
-      }
+      whenPushModuleReady(promise) { mp -> promise.resolve(mp.pushMessageManager.isPushEnabled) }
     }
 
     AsyncFunction("enablePush") { promise: Promise ->
-      Log.d("ExpoMarketingCloudSdk", "Enabling push notifications")
       whenPushModuleReady(promise) { mp ->
         mp.pushMessageManager.enablePush()
-        val isEnabled = mp.pushMessageManager.isPushEnabled
-        Log.d("ExpoMarketingCloudSdk", "Push enabled: $isEnabled")
-        promise.resolve(isEnabled)
+        promise.resolve(mp.pushMessageManager.isPushEnabled)
       }
     }
 
     AsyncFunction("disablePush") { promise: Promise ->
-      Log.d("ExpoMarketingCloudSdk", "Disabling push notifications")
       whenPushModuleReady(promise) { mp ->
         mp.pushMessageManager.disablePush()
-        val isEnabled = mp.pushMessageManager.isPushEnabled
+        promise.resolve(mp.pushMessageManager.isPushEnabled)
+      }
+    }
 
     AsyncFunction("getSystemToken") { promise: Promise ->
       whenPushModuleReady(promise) { mp -> promise.resolve(mp.pushMessageManager.pushToken) }
