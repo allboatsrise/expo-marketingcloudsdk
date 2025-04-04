@@ -3,6 +3,11 @@ import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-cor
 import ExpoMarketingCloudSdkModule from './ExpoMarketingCloudSdkModule';
 import { InboxResponsePayload, LogEventPayload, InboxMessage, RegistrationResponseSucceededPayload } from './ExpoMarketingCloudSdk.types';
 
+export { isSfmcNotificationResponse } from './notifications/helpers/isSfmcNotificationResponse'
+export { extractPayloadFromSfmcNotificationResponse } from './notifications/helpers/extractPayloadFromSfmcNotificationResponse'
+export { useLastSfmcNotificationResponse } from './notifications/hooks/useLastSfmcNotificationResponse'
+export { SfmcNotificationMessageType, SfmcNotificationSoundType, SfmcNotificationResponsePayload } from './notifications/types'
+
 export async function isPushEnabled(): Promise<boolean> {
   return await ExpoMarketingCloudSdkModule.isPushEnabled();
 }
