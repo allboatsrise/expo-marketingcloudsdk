@@ -1,6 +1,6 @@
 # @allboatsrise/expo-marketingcloudsdk
 
-This is an Expo module that provides a wrapper around the Salesforce Marketing Cloud SDK for iOS and Android.
+This is an Expo module that provides a wrapper around the Salesforce Marketing Cloud (SFMC) SDK for iOS and Android.
 
 It allows Expo-based apps to integrate with the Marketing Cloud SDK.
 
@@ -143,6 +143,9 @@ Various functions, their parameters, return values, and their specific purposes 
 | `isAnalyticsEnabled` | Returns a promise that resolves to a boolean indicating whether analytics are enabled for the user. |
 | `enableAnalytics` | Returns a promise that resolves when analytics have been successfully enabled. |
 | `disableAnalytics` | Returns a promise that resolves when analytics have been successfully disabled. |
+| `isSfmcNotificationResponse` | Check if a notification response `NotificationResponse` originated from SFMC. |
+| `extractPayloadFromSfmcNotificationResponse` | Extract payload info from SFMC notification reponse. |
+| `useLastSfmcNotificationResponse` | A React hook that always returns the SFMC notification response that was received most recently. |
 
 
 ## Add event listener
@@ -178,4 +181,38 @@ useEffect(() => {
 }, [])
 ```
 
+## Notification Response Handling
 
+Use `useLastSfmcNotificationResponse` hook to listen for last notification that the user interacted with that originated from SFMC.
+
+```typescript
+import { useLastSfmcNotificationResponse } from '@allboatsrise/expo-marketingcloudsdk'
+
+const { response, payload } = useLastSfmcNotificationResponse()
+
+useEffect(() => {
+  if (!payload) return
+
+  if (responsePayload.openDirectUrl) {
+    // e.g. open url in the browser
+  }
+}, [payload])
+```
+
+Alternatively use `isSfmcNotificationResponse` to check if the response from `useLastNotificationResponse` originated from SFMC and then extract the payload using `extractPayloadFromSfmcNotificationResponse`
+
+```typescript
+import { useLastNotificationResponse } from 'expo-notifications'
+import { isSfmcNotificationResponse, extractPayloadFromSfmcNotificationResponse } from '@allboatsrise/expo-marketingcloudsdk'
+
+const response = useLastNotificationResponse()
+
+useEffect(() => {
+  if (!response) return
+  if (!isSfmcNotificationResponse(response)) return
+  const payload = extractPayloadFromSfmcNotificationResponse(response)
+  
+  if (responsePayload.openDirectUrl) {
+    // e.g. open url in the browser
+  }
+}, [payload])
