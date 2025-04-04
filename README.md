@@ -115,34 +115,34 @@ Various functions, their parameters, return values, and their specific purposes 
 
 ## Functions
 
-| Function Name | Parameters | Return Type | Description |
-| --- | --- | --- | --- |
-| `isPushEnabled` | None | `Promise<boolean>` | Returns a promise that resolves to a boolean indicating whether push notifications are enabled for the user. |
-| `enablePush` | None | `Promise<void>` | Returns a promise that resolves when push notifications have been successfully enabled. |
-| `disablePush` | None | `Promise<void>` | Returns a promise that resolves when push notifications have been successfully disabled. |
-| `getSystemToken` | None | `Promise<string>` | Returns a promise that resolves to a string representing the device's push notification token. |
-| `setSystemToken` | `token: string` | `Promise<void>` | Returns a promise that resolves when the device's push notification token has been successfully set. |
-| `getAttributes` | None | `Promise<Record<string, string>>` | Returns a promise that resolves to an object representing the user's attributes. |
-| `setAttribute` | `key: string`, `value: string` | `Promise<void>` | Returns a promise that resolves when an attribute has been successfully set for the user. |
-| `clearAttribute` | `key: string` | `Promise<void>` | Returns a promise that resolves when an attribute has been successfully cleared for the user. |
-| `addTag` | `tag: string` | `Promise<void>` | Returns a promise that resolves when a tag has been successfully added for the user. |
-| `removeTag` | `tag: string` | `Promise<void>` | Returns a promise that resolves when a tag has been successfully removed for the user. |
-| `getTags` | None | `Promise<string[]>` | Returns a promise that resolves to an array of strings representing the user's tags. |
-| `setContactKey` | `contactKey: string` | `Promise<void>` | Returns a promise that resolves when the user's contact key has been successfully set. |
-| `getContactKey` | None | `Promise<string>` | Returns a promise that resolves to a string representing the user's contact key. |
-| `getSdkState` | None | `Promise<Record<string, unknown>>` | Returns a promise that resolves to an object representing the current state of the SDK. |
-| `track` | `name: string`, `attributes: Record<string, string>` | `Promise<void>` | Returns a promise that resolves when a custom event has been successfully tracked. |
-| `deleteMessage` | `messageId: string` | `Promise<void>` | Returns a promise that resolves when a specific inbox message has been successfully deleted. |
-| `getDeletedMessageCount` | None | `Promise<number>` | Returns a promise that resolves to a number representing the total number of deleted inbox messages. |
-| `getDeletedMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the deleted inbox messages. |
-| `getMessageCount` | None | `Promise<number>` | Returns a promise that resolves to a number representing the total number of inbox messages. |
-| `getMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the inbox messages. |
-| `getReadMessageCount` | None | `Promise<number>` | Returns a promise that resolves to a number representing the total number of read inbox messages. |
-| `getReadMessages` | None | `Promise<InboxMessage[]>` | Returns a promise that resolves to an array of `InboxMessage` objects representing the read inbox messages. |
-| `trackMessageOpened` | `messageId`: string | Promise<boolean> | Returns a promise that resolves to true when inbox open event successfully triggered on message. |
-| `isAnalyticsEnabled` | None | Returns a promise that resolves to a boolean indicating whether analytics are enabled for the user. |
-| `enableAnalytics` | None | `Promise<void>` | Returns a promise that resolves when analytics have been successfully enabled. |
-| `disableAnalytics` | None | `Promise<void>` | Returns a promise that resolves when analytics have been successfully disabled. |
+| Function Name | Description |
+| --- | --- |
+| `isPushEnabled` | Returns a promise that resolves to a boolean indicating whether push notifications are enabled for the user. |
+| `enablePush` | Returns a promise that resolves when push notifications have been successfully enabled. |
+| `disablePush` | Returns a promise that resolves when push notifications have been successfully disabled. |
+| `getSystemToken` | Returns a promise that resolves to a string representing the device's push notification token. |
+| `setSystemToken` | Returns a promise that resolves when the device's push notification token has been successfully set. |
+| `getAttributes` | Returns a promise that resolves to an object representing the user's attributes. |
+| `setAttribute` | Returns a promise that resolves when an attribute has been successfully set for the user. |
+| `clearAttribute` | Returns a promise that resolves when an attribute has been successfully cleared for the user. |
+| `addTag` | Returns a promise that resolves when a tag has been successfully added for the user. |
+| `removeTag` | Returns a promise that resolves when a tag has been successfully removed for the user. |
+| `getTags` | Returns a promise that resolves to an array of strings representing the user's tags. |
+| `setContactKey` | Returns a promise that resolves when the user's contact key has been successfully set. |
+| `getContactKey` | Returns a promise that resolves to a string representing the user's contact key. |
+| `getSdkState` | Returns a promise that resolves to an object representing the current state of the SDK. |
+| `track` | Returns a promise that resolves when a custom event has been successfully tracked. |
+| `deleteMessage` | Returns a promise that resolves when a specific inbox message has been successfully deleted. |
+| `getDeletedMessageCount` | Returns a promise that resolves to a number representing the total number of deleted inbox messages. |
+| `getDeletedMessages` | Returns a promise that resolves to an array of `InboxMessage` objects representing the deleted inbox messages. |
+| `getMessageCount` | Returns a promise that resolves to a number representing the total number of inbox messages. |
+| `getMessages` | Returns a promise that resolves to an array of `InboxMessage` objects representing the inbox messages. |
+| `getReadMessageCount` | Returns a promise that resolves to a number representing the total number of read inbox messages. |
+| `getReadMessages` | Returns a promise that resolves to an array of `InboxMessage` objects representing the read inbox messages. |
+| `trackMessageOpened` | Returns a promise that resolves to true when inbox open event successfully triggered on message. |
+| `isAnalyticsEnabled` | Returns a promise that resolves to a boolean indicating whether analytics are enabled for the user. |
+| `enableAnalytics` | Returns a promise that resolves when analytics have been successfully enabled. |
+| `disableAnalytics` | Returns a promise that resolves when analytics have been successfully disabled. |
 
 
 ## Add event listener
