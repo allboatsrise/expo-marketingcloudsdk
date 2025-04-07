@@ -1,6 +1,6 @@
 # @hi3g-access/expo-marketingcloudsdk
 
-This is an Expo module that provides a wrapper around the Salesforce Marketing Cloud SDK for iOS and Android.
+This is an Expo module that provides a wrapper around the Salesforce Marketing Cloud (SFMC) SDK for iOS and Android.
 
 It allows Expo-based apps to integrate with the Marketing Cloud SDK.
 
@@ -118,31 +118,38 @@ Various functions, their parameters, return values, and their specific purposes 
 
 ## Functions
 
-| Function Name            | Parameters                                           | Return Type                        | Description                                                                                                    |
-| ------------------------ | ---------------------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `isPushEnabled`          | None                                                 | `Promise<boolean>`                 | Returns a promise that resolves to a boolean indicating whether push notifications are enabled for the user.   |
-| `enablePush`             | None                                                 | `Promise<void>`                    | Returns a promise that resolves when push notifications have been successfully enabled.                        |
-| `disablePush`            | None                                                 | `Promise<void>`                    | Returns a promise that resolves when push notifications have been successfully disabled.                       |
-| `getSystemToken`         | None                                                 | `Promise<string>`                  | Returns a promise that resolves to a string representing the device's push notification token.                 |
-| `setSystemToken`         | `token: string`                                      | `Promise<void>`                    | Returns a promise that resolves when the device's push notification token has been successfully set.           |
-| `getAttributes`          | None                                                 | `Promise<Record<string, string>>`  | Returns a promise that resolves to an object representing the user's attributes.                               |
-| `setAttribute`           | `key: string`, `value: string`                       | `Promise<void>`                    | Returns a promise that resolves when an attribute has been successfully set for the user.                      |
-| `clearAttribute`         | `key: string`                                        | `Promise<void>`                    | Returns a promise that resolves when an attribute has been successfully cleared for the user.                  |
-| `addTag`                 | `tag: string`                                        | `Promise<void>`                    | Returns a promise that resolves when a tag has been successfully added for the user.                           |
-| `removeTag`              | `tag: string`                                        | `Promise<void>`                    | Returns a promise that resolves when a tag has been successfully removed for the user.                         |
-| `getTags`                | None                                                 | `Promise<string[]>`                | Returns a promise that resolves to an array of strings representing the user's tags.                           |
-| `setContactKey`          | `contactKey: string`                                 | `Promise<void>`                    | Returns a promise that resolves when the user's contact key has been successfully set.                         |
-| `getContactKey`          | None                                                 | `Promise<string>`                  | Returns a promise that resolves to a string representing the user's contact key.                               |
-| `getSdkState`            | None                                                 | `Promise<Record<string, unknown>>` | Returns a promise that resolves to an object representing the current state of the SDK.                        |
-| `track`                  | `name: string`, `attributes: Record<string, string>` | `Promise<void>`                    | Returns a promise that resolves when a custom event has been successfully tracked.                             |
-| `deleteMessage`          | `messageId: string`                                  | `Promise<void>`                    | Returns a promise that resolves when a specific inbox message has been successfully deleted.                   |
-| `getDeletedMessageCount` | None                                                 | `Promise<number>`                  | Returns a promise that resolves to a number representing the total number of deleted inbox messages.           |
-| `getDeletedMessages`     | None                                                 | `Promise<InboxMessage[]>`          | Returns a promise that resolves to an array of `InboxMessage` objects representing the deleted inbox messages. |
-| `getMessageCount`        | None                                                 | `Promise<number>`                  | Returns a promise that resolves to a number representing the total number of inbox messages.                   |
-| `getMessages`            | None                                                 | `Promise<InboxMessage[]>`          | Returns a promise that resolves to an array of `InboxMessage` objects representing the inbox messages.         |
-| `getReadMessageCount`    | None                                                 | `Promise<number>`                  | Returns a promise that resolves to a number representing the total number of read inbox messages.              |
-| `getReadMessages`        | None                                                 | `Promise<InboxMessage[]>`          | Returns a promise that resolves to an array of `InboxMessage` objects representing the read inbox messages.    |
-| `trackMessageOpened`     | `messageId`: string                                  | Promise<boolean>                   | Returns a promise that resolves to true when inbox open event successfully triggered on message.               |
+| Function Name | Description |
+| --- | --- |
+| `isPushEnabled` | Returns a promise that resolves to a boolean indicating whether push notifications are enabled for the user. |
+| `enablePush` | Returns a promise that resolves when push notifications have been successfully enabled. |
+| `disablePush` | Returns a promise that resolves when push notifications have been successfully disabled. |
+| `getSystemToken` | Returns a promise that resolves to a string representing the device's push notification token. |
+| `setSystemToken` | Returns a promise that resolves when the device's push notification token has been successfully set. |
+| `getAttributes` | Returns a promise that resolves to an object representing the user's attributes. |
+| `setAttribute` | Returns a promise that resolves when an attribute has been successfully set for the user. |
+| `clearAttribute` | Returns a promise that resolves when an attribute has been successfully cleared for the user. |
+| `addTag` | Returns a promise that resolves when a tag has been successfully added for the user. |
+| `removeTag` | Returns a promise that resolves when a tag has been successfully removed for the user. |
+| `getTags` | Returns a promise that resolves to an array of strings representing the user's tags. |
+| `setContactKey` | Returns a promise that resolves when the user's contact key has been successfully set. |
+| `getContactKey` | Returns a promise that resolves to a string representing the user's contact key. |
+| `getSdkState` | Returns a promise that resolves to an object representing the current state of the SDK. |
+| `track` | Returns a promise that resolves when a custom event has been successfully tracked. |
+| `deleteMessage` | Returns a promise that resolves when a specific inbox message has been successfully deleted. |
+| `getDeletedMessageCount` | Returns a promise that resolves to a number representing the total number of deleted inbox messages. |
+| `getDeletedMessages` | Returns a promise that resolves to an array of `InboxMessage` objects representing the deleted inbox messages. |
+| `getMessageCount` | Returns a promise that resolves to a number representing the total number of inbox messages. |
+| `getMessages` | Returns a promise that resolves to an array of `InboxMessage` objects representing the inbox messages. |
+| `getReadMessageCount` | Returns a promise that resolves to a number representing the total number of read inbox messages. |
+| `getReadMessages` | Returns a promise that resolves to an array of `InboxMessage` objects representing the read inbox messages. |
+| `trackMessageOpened` | Returns a promise that resolves to true when inbox open event successfully triggered on message. |
+| `isAnalyticsEnabled` | Returns a promise that resolves to a boolean indicating whether analytics are enabled for the user. |
+| `enableAnalytics` | Returns a promise that resolves when analytics have been successfully enabled. |
+| `disableAnalytics` | Returns a promise that resolves when analytics have been successfully disabled. |
+| `isSfmcNotificationResponse` | Check if a notification response `NotificationResponse` originated from SFMC. |
+| `extractPayloadFromSfmcNotificationResponse` | Extract payload info from SFMC notification reponse. |
+| `useLastSfmcNotificationResponse` | A React hook that always returns the SFMC notification response that was received most recently. |
+
 
 ## Add event listener
 
@@ -182,3 +189,39 @@ useEffect(() => {
   }
 }, [])
 ```
+
+## Notification Response Handling
+
+Use `useLastSfmcNotificationResponse` hook to listen for last notification that the user interacted with that originated from SFMC.
+
+```typescript
+import { useLastSfmcNotificationResponse } from '@allboatsrise/expo-marketingcloudsdk'
+
+const { response, payload } = useLastSfmcNotificationResponse()
+
+useEffect(() => {
+  if (!payload) return
+
+  if (responsePayload.openDirectUrl) {
+    // e.g. open url in the browser
+  }
+}, [payload])
+```
+
+Alternatively use `isSfmcNotificationResponse` to check if the response from `useLastNotificationResponse` originated from SFMC and then extract the payload using `extractPayloadFromSfmcNotificationResponse`
+
+```typescript
+import { useLastNotificationResponse } from 'expo-notifications'
+import { isSfmcNotificationResponse, extractPayloadFromSfmcNotificationResponse } from '@allboatsrise/expo-marketingcloudsdk'
+
+const response = useLastNotificationResponse()
+
+useEffect(() => {
+  if (!response) return
+  if (!isSfmcNotificationResponse(response)) return
+  const payload = extractPayloadFromSfmcNotificationResponse(response)
+  
+  if (responsePayload.openDirectUrl) {
+    // e.g. open url in the browser
+  }
+}, [payload])
