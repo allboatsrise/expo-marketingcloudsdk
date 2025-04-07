@@ -274,6 +274,27 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
         }
       }
     }
+
+    AsyncFunction("isAnalyticsEnabled") { (promise: Promise) in
+      SFMCSdk.requestPushSdk { mp in
+        promise.resolve(mp.isAnalyticsEnabled())
+      }
+    }
+
+    AsyncFunction("enableAnalytics") { (promise: Promise) in
+      SFMCSdk.requestPushSdk { mp in
+        mp.setAnalyticsEnabled(true)
+        promise.resolve(mp.isAnalyticsEnabled())
+      }
+    }
+
+    AsyncFunction("disableAnalytics") { (promise: Promise) in
+      SFMCSdk.requestPushSdk { mp in
+        mp.setAnalyticsEnabled(false)
+        promise.resolve(mp.isAnalyticsEnabled())
+      }
+    }
+
   }
   
   @objc

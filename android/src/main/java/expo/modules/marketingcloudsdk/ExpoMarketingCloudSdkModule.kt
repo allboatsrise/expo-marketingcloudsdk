@@ -190,6 +190,24 @@ class ExpoMarketingCloudSdkModule : Module() {
       }
     }
 
+    AsyncFunction("isAnalyticsEnabled") { promise: Promise ->
+      whenPushModuleReady(promise) { mp -> promise.resolve(mp.analyticsManager.areAnalyticsEnabled()) }
+    }
+
+    AsyncFunction("enableAnalytics") { promise: Promise ->
+      whenPushModuleReady(promise) { mp ->
+        mp.analyticsManager.enableAnalytics()
+        promise.resolve(mp.analyticsManager.areAnalyticsEnabled())
+      }
+    }
+
+    AsyncFunction("disableAnalytics") { promise: Promise ->
+      whenPushModuleReady(promise) { mp ->
+        mp.analyticsManager.disableAnalytics()
+        promise.resolve(mp.analyticsManager.areAnalyticsEnabled())
+      }
+    }
+
     AsyncFunction("startObserving") {eventName: String? ->
       when (eventName) {
         "onLog" -> {
