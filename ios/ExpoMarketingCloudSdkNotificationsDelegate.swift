@@ -1,20 +1,21 @@
 import ExpoModulesCore
+import EXNotifications
 import SFMCSDK
 import MarketingCloudSDK
 
-class ExpoMarketingCloudSdkNotificationsDelegate : NSObject, EXNotificationsDelegate {
-  @objc
-  public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
-    SFMCSdk.requestPushSdk { mp in
-      mp.setNotificationUserInfo(userInfo)
+class ExpoMarketingCloudSdkNotificationsDelegate : NSObject, NotificationDelegate {
+    public func didReceive(_ userInfo: [AnyHashable : Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+        SFMCSdk.requestPushSdk { mp in
+          mp.setNotificationUserInfo(userInfo)
+        }
+        completionHandler(UIBackgroundFetchResult.newData)
+        return true
     }
-    return UIBackgroundFetchResult.newData
-  }
-  @objc
-  public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-    SFMCSdk.requestPushSdk { mp in
-      mp.setNotificationRequest(response.notification.request)
+    
+    public func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
+        SFMCSdk.requestPushSdk { mp in
+          mp.setNotificationRequest(response.notification.request)
+        }
+        return true
     }
-    completionHandler()
-  }
 }
