@@ -123,7 +123,11 @@ class ExpoMarketingCloudSdkModule : Module() {
     }
 
     AsyncFunction("track") {name: String, attributes: ReadableMap, promise: Promise ->
-      val event = EventManager.customEvent(name, attributes.toHashMap())
+      val attributeMap = HashMap(
+        attributes.toHashMap().filterValues { it != null }
+          .mapValues { it.value!! }
+      )
+      val event = EventManager.customEvent(name, attributeMap)
       SFMCSdk.track(event)
       promise.resolve(true)
     }
