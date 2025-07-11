@@ -1,3 +1,4 @@
 /node_modules
 /build
 /plugin/build
+/plugin/tsconfig.tsbuildinfo

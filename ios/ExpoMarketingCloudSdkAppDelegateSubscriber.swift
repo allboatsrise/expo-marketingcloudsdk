@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import EXNotifications
 import SFMCSDK
 import MarketingCloudSDK
 
@@ -46,10 +47,9 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
     let completionHandler: (OperationResult) -> () = { result in
         if result == .success {
           // module is fully configured and ready for user
-          let notificationCenterDelegate = ModuleRegistryProvider.getSingletonModule(for: EXNotificationCenterDelegate.self) as! EXNotificationCenterDelegate
-          
-          self.notificationDelegate = ExpoMarketingCloudSdkNotificationsDelegate()
-          notificationCenterDelegate.add(self.notificationDelegate!)
+          let delegate = ExpoMarketingCloudSdkNotificationsDelegate()
+          self.notificationDelegate = delegate
+          NotificationCenterManager.shared.addDelegate(delegate)
   
         } else if result == .error {
           // module failed to initialize, check logs for more details

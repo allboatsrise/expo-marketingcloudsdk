@@ -1,5 +1,3 @@
-import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
-
 import ExpoMarketingCloudSdkModule from './ExpoMarketingCloudSdkModule';
 import { InboxResponsePayload, LogEventPayload, InboxMessage, RegistrationResponseSucceededPayload } from './ExpoMarketingCloudSdk.types';
 
@@ -140,18 +138,16 @@ export async function disableAnalytics(): Promise<boolean> {
   return await ExpoMarketingCloudSdkModule.disableAnalytics();
 }
 
-const emitter = new EventEmitter(ExpoMarketingCloudSdkModule ?? NativeModulesProxy.ExpoMarketingCloudSdk);
-
-export function addLogListener(listener: (event: LogEventPayload) => void): Subscription {
-  return emitter.addListener<LogEventPayload>('onLog', listener);
+export function addLogListener(listener: (event: LogEventPayload) => void) {
+  return ExpoMarketingCloudSdkModule.addListener('onLog', listener);
 }
 
-export function addInboxResponseListener(listener: (event: InboxResponsePayload) => void): Subscription {
-  return emitter.addListener<InboxResponsePayload>('onInboxResponse', listener)
+export function addInboxResponseListener(listener: (event: InboxResponsePayload) => void) {
+  return ExpoMarketingCloudSdkModule.addListener('onInboxResponse', listener)
 }
 
-export function addRegistrationResponseSucceededListener(listener: (event: RegistrationResponseSucceededPayload) => void): Subscription {
-  return emitter.addListener<RegistrationResponseSucceededPayload>('onRegistrationResponseSucceeded', listener)
+export function addRegistrationResponseSucceededListener(listener: (event: RegistrationResponseSucceededPayload) => void) {
+  return ExpoMarketingCloudSdkModule.addListener('onRegistrationResponseSucceeded', listener)
 }
 
 export { LogEventPayload, InboxResponsePayload, InboxMessage, RegistrationResponseSucceededPayload }
