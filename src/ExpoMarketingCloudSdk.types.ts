@@ -70,3 +70,9 @@ export type RegistrationResponseSucceededPayload = {
     "platform_Version" : string
   }
 }
+
+export type ExpoMarketingCloudSdkModuleEvents = {
+  onLog: (params: LogEventPayload) => void;
+  onInboxResponse: (params: InboxResponsePayload) => void;
+  onRegistrationResponseSucceeded: (params: RegistrationResponseSucceededPayload) => void;
+}
