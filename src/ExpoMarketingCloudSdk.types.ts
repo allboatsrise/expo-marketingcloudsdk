@@ -21,6 +21,9 @@ export type InboxMessage = {
   deleted: boolean
   endDateUtc: string
   id: string
+  inboxMessage: string | null
+  inboxMessageType: number | null
+  inboxSubtitle: string | null
   media: Media | null
   /** Indicates whether inbox message has been marked as read */
   read: boolean
@@ -34,7 +37,7 @@ export type InboxMessage = {
   /** Push notification subtitle */
   subtitle: string | null
   /** Url to SFMC CloudPage */
-  url: string
+  url: string | null
 }
 
 export type InboxResponsePayload = {

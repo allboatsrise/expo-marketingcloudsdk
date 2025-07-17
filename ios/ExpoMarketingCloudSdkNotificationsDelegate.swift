@@ -13,7 +13,7 @@ class ExpoMarketingCloudSdkNotificationsDelegate : NSObject, EXNotificationsDele
   @objc
   public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
     SFMCSdk.requestPushSdk { mp in
-      mp.setNotificationRequest(response.notification.request)
+      mp.setNotificationResponse(response)
     }
     completionHandler()
   }
