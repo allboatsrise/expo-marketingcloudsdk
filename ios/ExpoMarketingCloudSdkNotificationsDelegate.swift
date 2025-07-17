@@ -14,7 +14,7 @@ class ExpoMarketingCloudSdkNotificationsDelegate : NSObject, NotificationDelegat
     
     public func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
         SFMCSdk.requestPushSdk { mp in
-          mp.setNotificationRequest(response.notification.request)
+          mp.setNotificationResponse(response)
         }
         return true
     }

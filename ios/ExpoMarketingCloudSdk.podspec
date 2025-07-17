@@ -17,8 +17,8 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'EXNotifications'
-  s.dependency 'MarketingCloudSDK', '8.1.4'
-  s.dependency 'MarketingCloud-SFMCSdk', '1.1.4'
+  s.dependency 'MarketingCloudSDK', '9.0.3'
+  s.dependency 'MarketingCloud-SFMCSdk', '2.0.2'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
