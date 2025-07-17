@@ -28,7 +28,8 @@ export const normalizeSfmcAndroidNotificationResponsePayload = (
   } = payload
   return {
     body: alert,
-    cloudPageUrl: _x,
+    cloudPageUrl: _x, // deprecated, use `url` instead
+    url: _x,
     mediaAlt: _mediaAlt,
     mediaUrl: _mediaUrl,
     messageId: _m,
@@ -49,7 +50,8 @@ export const normalizeSfmcIosNotificationResponsePayload = (
   const { _h, _m, _mt, _pb, _r, _sid, aps, _mediaAlt, _mediaUrl, _od, _x, ...customKeys } = payload
   return {
     body: aps.alert.body,
-    cloudPageUrl: _x,
+    cloudPageUrl: _x, // deprecated, use `url` instead
+    url: _x,
     mediaAlt: _mediaAlt,
     mediaUrl: _mediaUrl,
     messageId: _m,

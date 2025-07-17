@@ -22,7 +22,7 @@ export type InboxMessage = {
   endDateUtc: string
   id: string
   inboxMessage: string | null
-  inboxMessageType: number | null
+  inboxMessageType: number
   inboxSubtitle: string | null
   media: Media | null
   /** Indicates whether inbox message has been marked as read */

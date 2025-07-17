@@ -118,7 +118,9 @@ export interface SfmcNotificationResponsePayload {
   messageId: string
   openDirectUrl: string | undefined
   requestId: string
+  /** @deprecated Since Inbox 2.0 there is no guarantee that this is a cloud page - it could be any url. Use `url` instead. */
   cloudPageUrl: string | undefined
+  url: string | undefined
   messageType: SfmcNotificationMessageType
   sound: SfmcNotificationSoundType | undefined
   title: string | undefined

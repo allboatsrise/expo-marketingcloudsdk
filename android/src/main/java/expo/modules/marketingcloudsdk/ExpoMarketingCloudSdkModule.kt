@@ -374,12 +374,18 @@ class ExpoMarketingCloudSdkModule : Module() {
       var custom = it.custom
 
       mapOf(
-        "id" to it.id,
         "alert" to it.alert,
         "custom" to if (custom != null) Json.decodeFromString(ExpoMarketingCloudSdkKotlinxGenericMapSerializer, custom) else null,
         "customKeys" to it.customKeys,
         "deleted" to it.deleted,
         "endDateUtc" to if (it.endDateUtc != null) dateFormatter.format(it.endDateUtc) else null,
+        "id" to it.id,
+        "inboxMessage" to it.inboxMessage,
+        "inboxMessageType" to when(val type = it.messageType) {
+          is Int -> type + 1
+          else -> 1
+        },
+        "inboxSubtitle" to it.inboxSubtitle,
         "media" to if (media != null) mapOf(
           "url" to media.url,
           "altText" to media.altText,
