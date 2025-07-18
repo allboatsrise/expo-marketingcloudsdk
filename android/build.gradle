@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'expo.modules.marketingcloudsdk'
-version = '51.0.13'
+version = '51.0.14'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -35,7 +35,7 @@ android {
   namespace "expo.modules.marketingcloudsdk"
   defaultConfig {
     versionCode 1
-    versionName "51.0.13"
+    versionName "51.0.14"
   }
   lintOptions {
     abortOnError false
