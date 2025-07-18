@@ -383,7 +383,7 @@ class ExpoMarketingCloudSdkModule : Module() {
         "inboxMessage" to it.inboxMessage,
         "inboxMessageType" to when(val type = it.messageType) {
           is Int -> type + 1
-          else -> 1
+          else -> null
         },
         "inboxSubtitle" to it.inboxSubtitle,
         "media" to if (media != null) mapOf(
