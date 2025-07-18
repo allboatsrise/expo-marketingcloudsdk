@@ -343,7 +343,7 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
           "endDateUtc": endDateUtc != nil ? dateFormatter.string(from: endDateUtc!) : nil,
           "id": message["id"],
           "inboxMessage": message["inboxMessage"],
-          "inboxMessageType": message["inboxMessageType"],
+          "inboxMessageType": (message["inboxMessageType"] as? Int).map { $0 + 1 },
           "inboxSubtitle": message["inboxSubtitle"],
           "media": mediaUrl != nil ? ["url": mediaUrl, "altText": mediaAltText] : nil,
           "read": message["read"] as? Int == 0 ? false : true,
