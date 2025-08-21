@@ -16,6 +16,6 @@ class ExpoMarketingCloudSdkNotificationsDelegate : NSObject, NotificationDelegat
         SFMCSdk.requestPushSdk { mp in
           mp.setNotificationResponse(response)
         }
-        return true
+        return false
     }
 }
