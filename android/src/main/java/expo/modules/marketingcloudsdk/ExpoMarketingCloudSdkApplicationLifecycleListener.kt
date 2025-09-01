@@ -3,6 +3,7 @@ package expo.modules.marketingcloudsdk
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
 import com.salesforce.marketingcloud.MCLogListener
 import com.salesforce.marketingcloud.MarketingCloudConfig
@@ -14,6 +15,7 @@ import com.salesforce.marketingcloud.sfmcsdk.SFMCSdkModuleConfig
 import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogLevel
 import com.salesforce.marketingcloud.sfmcsdk.components.logging.LogListener
 import expo.modules.core.interfaces.ApplicationLifecycleListener
+import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder.Companion.META_DATA_DEFAULT_COLOR_KEY
 import kotlin.random.Random
 
 
@@ -54,6 +56,9 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
               NotificationManager.createDefaultNotificationChannel(context),
               R.drawable.notification_icon
             )
+
+            getColor(context)?.let { builder.color = it.toInt() }
+
             builder.setContentIntent(
               NotificationManager.redirectIntentForAnalytics(
                 context,
@@ -103,4 +108,31 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
   private fun getDelayRegistrationUntilContactKeyIsSet(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_delay_registration_until_contact_key_is_set) == "true"
   private fun getInboxEnabled(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_inbox_enabled) == "true"
   private fun getMarkMessageReadOnInboxNotificationOpen(context: Context): Boolean = context.resources.getString(R.string.expo_marketingcloudsdk_mark_message_read_on_inbox_notification_open) == "true"
+
+  /**
+   * Based on @see https://github.com/expo/expo/blob/18c8300c2c09f1164eec8a04e760d2cb8cf05a83/packages/expo-notifications/android/src/main/java/expo/modules/notifications/notifications/presentation/builders/ExpoNotificationBuilder.kt#L364-L397
+   */
+  private fun getColor(context: Context): Number? {
+    try {
+      val ai = context.packageManager.getApplicationInfo(
+        context.packageName,
+        PackageManager.GET_META_DATA
+      )
+      if (ai.metaData.containsKey(META_DATA_DEFAULT_COLOR_KEY)) {
+        return context.resources.getColor(
+          ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY),
+          null
+        )
+      }
+    } catch (e: Excesption) {
+      Log.e(
+        "expo-marketingcloudsdk",
+        "Could not fetched default notification color.",
+        e
+      )
+    }
+
+    // No custom color
+    return null
+  }
 }
