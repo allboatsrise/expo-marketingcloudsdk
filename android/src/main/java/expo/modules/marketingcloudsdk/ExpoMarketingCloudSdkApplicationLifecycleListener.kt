@@ -124,7 +124,7 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
           null
         )
       }
-    } catch (e: Excesption) {
+    } catch (e: Exception) {
       Log.e(
         "expo-marketingcloudsdk",
         "Could not fetched default notification color.",
