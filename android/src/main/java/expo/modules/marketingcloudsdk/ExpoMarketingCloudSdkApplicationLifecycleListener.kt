@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import android.content.SharedPreferences
 import com.salesforce.marketingcloud.MCLogListener
 import com.salesforce.marketingcloud.MarketingCloudConfig
 import com.salesforce.marketingcloud.MarketingCloudSdk
@@ -20,6 +21,26 @@ import kotlin.random.Random
 
 
 class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleListener {
+
+  private data class StoredBuConfig(
+    val appId: String,
+    val accessToken: String,
+    val serverUrl: String,
+    val mid: String?
+  )
+
+  private fun prefs(context: Context): SharedPreferences = context.getSharedPreferences("expo_marketingcloudsdk_bu", Context.MODE_PRIVATE)
+
+  private fun loadStoredConfig(context: Context): StoredBuConfig? {
+    val p = prefs(context)
+  val appId = p.getString("storedAppId", null) ?: return null
+  val accessToken = p.getString("storedAccessToken", null) ?: return null
+  val serverUrlRaw = p.getString("storedServerUrl", null) ?: return null
+    val serverUrl = if (serverUrlRaw.endsWith('/')) serverUrlRaw else "$serverUrlRaw/"
+  val mid = p.getString("storedMid", null)?.takeIf { it.isNotBlank() }
+    return StoredBuConfig(appId, accessToken, serverUrl, mid)
+  }
+
   override fun onCreate(application: Application) {
     // Initialize logging _before_ initializing the SDK to avoid losing valuable debugging information.
     if(getDebug(application)) {
@@ -36,14 +57,18 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
       }
     }
 
-    // Configure Salesforce Marketing Cloud SDK
+  // Prefer stored BU config (from previous migrateBu) over static plugin resources if present
+  val stored = loadStoredConfig(application)
+
+  // Configure Salesforce Marketing Cloud SDK
     SFMCSdk.configure(application, SFMCSdkModuleConfig.build {
       pushModuleConfig = MarketingCloudConfig.builder().apply {
-        setApplicationId(getAppId(application))
-        if(getMid(application) != "") setMid(getMid(application))
-        setAccessToken(getAccessToken(application))
-        setAnalyticsEnabled(getAnalyticsEnabled(application))
-        setMarketingCloudServerUrl(getServerUrl(application))
+    setApplicationId(stored?.appId ?: getAppId(application))
+    val mid = stored?.mid ?: getMid(application)
+    if(mid != "") setMid(mid)
+    setAccessToken(stored?.accessToken ?: getAccessToken(application))
+    setAnalyticsEnabled(getAnalyticsEnabled(application))
+  setMarketingCloudServerUrl(stored?.serverUrl ?: getServerUrl(application).let { if (it.endsWith('/')) it else "$it/" })
         setDelayRegistrationUntilContactKeyIsSet(getDelayRegistrationUntilContactKeyIsSet(application))
         if(getSenderId(application) != "") setSenderId(getSenderId(application))
         setInboxEnabled(getInboxEnabled(application))

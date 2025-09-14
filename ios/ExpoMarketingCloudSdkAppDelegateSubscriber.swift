@@ -7,18 +7,26 @@ public class ExpoMarketingCloudSdkAppDelegateSubscriber : ExpoAppDelegateSubscri
   private var notificationDelegate: ExpoMarketingCloudSdkNotificationsDelegate?
   
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+  let defaults = UserDefaults.standard
 
-    let debug = Bundle.main.object(forInfoDictionaryKey: "SFMCDebug") as? Bool ?? false;
-    let accessToken = Bundle.main.object(forInfoDictionaryKey: "SFMCAccessToken") as! String
-    let analyticsEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCAnalyticsEnabled") as? Bool ?? false;
-    let appId = Bundle.main.object(forInfoDictionaryKey: "SFMCApplicationId") as! String
-    let applicationControlsBadging = Bundle.main.object(forInfoDictionaryKey: "SFMCApplicationControlsBadging") as? Bool ?? false;
-    let delayRegistrationUntilContactKeyIsSet = Bundle.main.object(forInfoDictionaryKey: "SFMCDelayRegistrationUntilContactKeyIsSet") as? Bool ?? false;
-    let inboxEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCInboxEnabled") as? Bool ?? false;
-    let locationEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCLocationEnabled") as? Bool ?? false;
-    let mid = Bundle.main.object(forInfoDictionaryKey: "SFMCMid") as? String;
-    let serverUrl = URL(string: Bundle.main.object(forInfoDictionaryKey: "SFMCServerUrl") as! String)!;
-    let markMessageReadOnInboxNotificationOpen = Bundle.main.object(forInfoDictionaryKey: "SFMCMarkNotificationReadOnInboxNotificationOpen") as? Bool ?? false;
+  let storedAppId = defaults.string(forKey: "storedAppId")
+  let storedAccessToken = defaults.string(forKey: "storedAccessToken")
+  let storedServerUrlStr = defaults.string(forKey: "storedServerUrl")
+  let storedMid = defaults.string(forKey: "storedMid")
+
+  let debug = Bundle.main.object(forInfoDictionaryKey: "SFMCDebug") as? Bool ?? false
+  let accessToken = storedAccessToken ?? (Bundle.main.object(forInfoDictionaryKey: "SFMCAccessToken") as! String)
+  let analyticsEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCAnalyticsEnabled") as? Bool ?? false
+  let appId = storedAppId ?? (Bundle.main.object(forInfoDictionaryKey: "SFMCApplicationId") as! String)
+  let applicationControlsBadging = Bundle.main.object(forInfoDictionaryKey: "SFMCApplicationControlsBadging") as? Bool ?? false
+  let delayRegistrationUntilContactKeyIsSet = Bundle.main.object(forInfoDictionaryKey: "SFMCDelayRegistrationUntilContactKeyIsSet") as? Bool ?? false
+  let inboxEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCInboxEnabled") as? Bool ?? false
+  let locationEnabled = Bundle.main.object(forInfoDictionaryKey: "SFMCLocationEnabled") as? Bool ?? false
+  let mid = (storedMid?.isEmpty == false ? storedMid : (Bundle.main.object(forInfoDictionaryKey: "SFMCMid") as? String))
+  let baseServerStr = storedServerUrlStr ?? (Bundle.main.object(forInfoDictionaryKey: "SFMCServerUrl") as! String)
+  let normalizedServer = baseServerStr.hasSuffix("/") ? baseServerStr : baseServerStr + "/"
+  let serverUrl = URL(string: normalizedServer)!
+  let markMessageReadOnInboxNotificationOpen = Bundle.main.object(forInfoDictionaryKey: "SFMCMarkNotificationReadOnInboxNotificationOpen") as? Bool ?? false
 
     if (debug) {
       // Enable logging for debugging early on. Debug level is not recommended for production apps, as significant data

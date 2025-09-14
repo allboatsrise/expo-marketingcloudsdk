@@ -10,6 +10,8 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
   private var refreshInboxPromise: Promise?
   private var logger: ExpoMarketingCloudSdkLogger?
   private var defaultLogLevel: LogLevel = LogLevel.none
+  // Prevent concurrent BU migrations
+  private var isMigratingBu: Bool = false
   
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
@@ -125,6 +127,208 @@ public class ExpoMarketingCloudSdkModule: Module, ExpoMarketingCloudSdkLoggerDel
       SFMCSdk.requestPushSdk { mp in
         promise.resolve(mp.attributes())
       }
+    }
+
+    AsyncFunction("migrateBu") { (config: [String: Any], promise: Promise) in
+      // Basic expected keys
+      guard let newAppId = config["appId"] as? String, !newAppId.isEmpty else {
+        promise.reject("ERR_INVALID_CONFIG", "Missing appId in config")
+        return
+      }
+      guard let newAccessToken = config["accessToken"] as? String, !newAccessToken.isEmpty else {
+        promise.reject("ERR_INVALID_CONFIG", "Missing accessToken in config")
+        return
+      }
+      guard let serverUrlStrRaw = config["serverUrl"] as? String, let serverUrlTmp = URL(string: serverUrlStrRaw) else {
+        promise.reject("ERR_INVALID_CONFIG", "Missing or invalid serverUrl in config")
+        return
+      }
+      // Normalize server url to always have trailing slash to match Android convention
+      let serverUrlStr = serverUrlStrRaw.hasSuffix("/") ? serverUrlStrRaw : serverUrlStrRaw + "/"
+      let newServerUrl = URL(string: serverUrlStr)!
+      let newMid = config["mid"] as? String
+
+      if self.isMigratingBu {
+        promise.reject("ERR_MIGRATION_IN_PROGRESS", "A BU migration is already in progress")
+        return
+      }
+
+      // Ensure SDK is operational before starting migration
+      if SFMCSdk.mp.getStatus() != .operational {
+        promise.reject("ERR_SDK_NOT_READY", "SDK is not operational; initialize before migrating")
+        return
+      }
+
+      self.isMigratingBu = true
+
+  // Internal timings (self-sufficient; not exposed via TS typings)
+  let timeoutMs = 30000 // overall guard timeout
+  let forceReconfigureAfterMs = 8000 // early forced reconfigure fallback
+
+      // Capture current data to carry over
+      var savedContactKey: String? = nil
+      var savedTags: [String] = []
+      var savedAttributes: [String: String] = [:]
+  var savedToken: String? = nil
+      var wasPushEnabled: Bool = false
+      var completed = false
+      var timeoutWorkItem: DispatchWorkItem?
+
+      SFMCSdk.requestPushSdk { mp in
+        wasPushEnabled = mp.pushEnabled()
+        savedContactKey = mp.contactKey()
+        if let tagsSet = mp.tags() {
+          // Convert AnyHashable elements to String safely
+          savedTags = tagsSet.compactMap { $0 as? String }
+        }
+        if let attrs = mp.attributes() {
+          // Safely cast only string key/value pairs
+          attrs.forEach { key, value in
+            if let k = key as? String, let v = value as? String {
+              savedAttributes[k] = v
+            }
+          }
+        }
+  savedToken = mp.deviceToken()
+
+        // Helper closure to proceed with reconfiguration once push is disabled
+        var proceedMigration: ((Bool) -> Void)? = nil
+        proceedMigration = { [weak self] skipPushCheck in
+          if completed { return }
+          if !skipPushCheck && mp.pushEnabled() { return } // ensure actually disabled unless forced
+          completed = true
+          mp.unsetRegistrationCallback()
+
+          // Build new push config
+          var pushBuilder = PushConfigBuilder(appId: newAppId)
+            .setAccessToken(newAccessToken)
+            .setMarketingCloudServerUrl(newServerUrl)
+          if let mid = newMid, !mid.isEmpty { pushBuilder = pushBuilder.setMid(mid) }
+
+          SFMCSdk.initializeSdk(ConfigBuilder().setPush(config: pushBuilder.build(), onCompletion: { result in
+            switch result {
+            case .success:
+              // Restore carried data in new context
+              if let ck = savedContactKey { SFMCSdk.identity.setProfileId(ck) }
+              savedAttributes.forEach { (k,v) in SFMCSdk.identity.setProfileAttribute(k, v) }
+              SFMCSdk.requestPushSdk { newMp in
+                savedTags.forEach { _ = newMp.addTag($0) }
+                if let tokenString = savedToken, let tokenObj = try? ExpoMarketingCloudSdkDeviceToken(hexString: tokenString) {
+                  newMp.setDeviceToken(tokenObj.data)
+                }
+                newMp.setPushEnabled(wasPushEnabled)
+                timeoutWorkItem?.cancel()
+                self?.isMigratingBu = false
+                let carried: [String: Any] = [
+                  "contactKey": savedContactKey as Any,
+                  "attributeCount": savedAttributes.count,
+                  "tagCount": savedTags.count,
+                  "tokenCarried": savedToken != nil
+                ]
+                let result: [String: Any] = [
+                  "success": true,
+                  "newAppId": newAppId,
+                  "carried": carried,
+                  "isPushEnabled": wasPushEnabled
+                ]
+                promise.resolve(result)
+                // Persist stored BU credentials for next cold start
+                let d = UserDefaults.standard
+                d.set(newAppId, forKey: "storedAppId")
+                d.set(newAccessToken, forKey: "storedAccessToken")
+                d.set(newServerUrl.absoluteString, forKey: "storedServerUrl")
+                if let mid = newMid, !mid.isEmpty {
+                  d.set(mid, forKey: "storedMid")
+                } else {
+                  d.removeObject(forKey: "storedMid")
+                }
+              }
+            default:
+              timeoutWorkItem?.cancel()
+              self?.isMigratingBu = false
+              promise.reject("ERR_REINIT_FAILED", "Failed to initialize SDK with new BU credentials")
+            }
+          }).build())
+        }
+
+        // Register one-off callback to detect opt-out registration
+        mp.setRegistrationCallback { _ in
+          // Only proceed after push disabled (opt-out completed)
+          if mp.pushEnabled() == false && !completed { proceedMigration?(false) }
+        }
+
+        // Disable push to trigger opt-out registration event
+        mp.setPushEnabled(false)
+        // Force a registration update by setting a transient attribute to encourage server sync
+        let ts = Int(Date().timeIntervalSince1970 * 1000)
+        SFMCSdk.identity.setProfileAttribute("bu_migration_ts", "\(ts)")
+
+        // Force fallback reconfigure after forceReconfigureAfterMs even if push flag never turned false
+        let forceWorkItem = DispatchWorkItem { [weak self] in
+          if !completed {
+            proceedMigration?(true) // skip push enabled check
+          }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(forceReconfigureAfterMs), execute: forceWorkItem)
+
+        // Poll fallback: in case registration callback never fires, periodically check pushEnabled
+        let pollInterval: TimeInterval = 2.0
+        var elapsed: Int = 0
+        let maxElapsed = timeoutMs // ms
+        let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        timer.schedule(deadline: .now() + pollInterval, repeating: pollInterval)
+        timer.setEventHandler {
+          if completed { timer.cancel(); return }
+          elapsed += Int(pollInterval * 1000)
+          SFMCSdk.requestPushSdk { innerMp in
+            if !innerMp.pushEnabled() { proceedMigration?(false) }
+          }
+          if elapsed >= maxElapsed { timer.cancel() }
+        }
+        timer.resume()
+
+        // Schedule timeout guard
+        let workItem = DispatchWorkItem { [weak self] in
+          if !completed {
+            completed = true
+            mp.unsetRegistrationCallback()
+            // Restore original push state if needed
+            if wasPushEnabled { mp.setPushEnabled(true) }
+            self?.isMigratingBu = false
+            promise.reject("ERR_MIGRATION_TIMEOUT", "BU migration timed out after \(timeoutMs) ms (pushEnabled may never have flipped)")
+          }
+        }
+        timeoutWorkItem = workItem
+  DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(timeoutMs), execute: workItem)
+      }
+    }
+
+    AsyncFunction("getStoredBu") { (promise: Promise) in
+      let d = UserDefaults.standard
+  // Read stored keys only (legacy keys removed)
+  let appId = d.string(forKey: "storedAppId")
+  let accessToken = d.string(forKey: "storedAccessToken")
+  let serverUrl = d.string(forKey: "storedServerUrl")
+      if appId == nil || accessToken == nil || serverUrl == nil {
+        promise.resolve(nil)
+        return
+      }
+  let mid = d.string(forKey: "storedMid")
+      promise.resolve([
+        "appId": appId as Any,
+        "accessToken": accessToken as Any,
+        "serverUrl": serverUrl as Any,
+        "mid": mid as Any
+      ])
+    }
+
+    AsyncFunction("clearStoredBu") { (promise: Promise) in
+      let d = UserDefaults.standard
+      d.removeObject(forKey: "storedAppId")
+      d.removeObject(forKey: "storedAccessToken")
+      d.removeObject(forKey: "storedServerUrl")
+      d.removeObject(forKey: "storedMid")
+      promise.resolve(true)
     }
 
     AsyncFunction("addTag") { (tag: String, promise: Promise) in
