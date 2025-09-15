@@ -23,6 +23,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.serialization.json.*
 import java.text.SimpleDateFormat
 import org.json.JSONObject
+import android.os.SystemClock
 
 
 class ExpoMarketingCloudSdkModule : Module() {
@@ -229,6 +230,7 @@ class ExpoMarketingCloudSdkModule : Module() {
       val POLL_INTERVAL_MS = 2_000L
       val REDISABLE_RETRY_MS = 3_000L
       val MAX_REDISABLE_ATTEMPTS = 3
+      val MIN_DISABLE_SETTLE_MS = 1_500L
       val TAG = "ExpoMCSdkMigration"
 
   if (newAppId.isNullOrBlank() || newAccessToken.isNullOrBlank() || newServerUrl.isNullOrBlank()) {
@@ -254,18 +256,23 @@ class ExpoMarketingCloudSdkModule : Module() {
         val wasPushEnabled = mp.pushMessageManager.isPushEnabled
         var previousSenderId: String? = null
         var previousAppId: String? = null
-        SFMCSdk.requestSdk { sdk ->
-          try {
-            val state = sdk.getSdkState()
-            val pushObj: JSONObject? = state.optJSONObject("PUSH")
-            val initConfig = pushObj?.optJSONObject("initConfig")
-            previousSenderId = initConfig?.optString("senderId")?.takeIf { !it.isNullOrBlank() }
-            previousAppId = initConfig?.optString("applicationId")
-            Log.d(TAG, "Previous state: appId=$previousAppId senderId=$previousSenderId")
-          } catch (ex: Throwable) {
-            Log.w(TAG, "Failed parsing previous sdk state: ${ex.message}")
+        try {
+          SFMCSdk.requestSdk { sdk ->
+            try {
+              val state = sdk.getSdkState()
+              val pushObj: JSONObject? = state.optJSONObject("PUSH")
+              val initConfig = pushObj?.optJSONObject("initConfig")
+              previousSenderId = initConfig?.optString("senderId")?.takeIf { !it.isNullOrBlank() }
+              previousAppId = initConfig?.optString("applicationId")
+              if (previousAppId.isNullOrBlank()) { // fallback to module identity
+                try { previousAppId = mp.moduleIdentity.applicationId } catch (_: Throwable) {}
+              }
+              Log.d(TAG, "Previous state: appId=$previousAppId senderId=$previousSenderId")
+            } catch (ex: Throwable) {
+              Log.w(TAG, "Failed parsing previous sdk state: ${ex.message}")
+            }
           }
-        }
+        } catch (_: Throwable) {}
         val normalizedServerUrl = newServerUrl?.let { if (it.endsWith('/')) it else "$it/" }
         if (normalizedServerUrl == null) {
           // Safety check
@@ -275,6 +282,8 @@ class ExpoMarketingCloudSdkModule : Module() {
         }
   var completed = false
         val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        var disableIssuedAt: Long = 0L
+        var gotRegistrationAfterDisable = false
 
   // Will hold registration listener so reconfigure helper can unregister it
   var tempListener: RegistrationEventListener? = null
@@ -421,8 +430,17 @@ class ExpoMarketingCloudSdkModule : Module() {
           override fun onRegistrationReceived(reg: Registration) {
             if (!completed) {
               if (!reg.pushEnabled) {
-                Log.d(TAG, "Registration event: push disabled -> proceeding to reconfigure")
-                reconfigureAndRestore(true)
+                // Only count registration events for the previous (old) BU prior to reconfigure
+                gotRegistrationAfterDisable = true
+                val elapsed = SystemClock.elapsedRealtime() - disableIssuedAt
+                val remaining = MIN_DISABLE_SETTLE_MS - elapsed
+                if (remaining > 0) {
+                  Log.d(TAG, "Registration event: push disabled; waiting extra ${remaining}ms before possible reconfigure (will check gotRegistrationAfterDisable)")
+                  handler.postDelayed({ if (gotRegistrationAfterDisable && !startedReconfigure) reconfigureAndRestore(true) }, remaining)
+                } else if (gotRegistrationAfterDisable && !startedReconfigure) {
+                  Log.d(TAG, "Registration event: push disabled & settle met -> proceeding to reconfigure")
+                  reconfigureAndRestore(true)
+                }
               } else if (wasPushEnabled && !startedReconfigure) {
                 Log.d(TAG, "Registration event: push still enabled, scheduling forced reconfigure in 500ms")
                 handler.postDelayed({ reconfigureAndRestore(true) }, 500)
@@ -432,18 +450,32 @@ class ExpoMarketingCloudSdkModule : Module() {
         }
 
   tempListener?.let { mp.registrationManager.registerForRegistrationEvents(it) }
-        mp.pushMessageManager.disablePush()
-        // Force registration update attribute to encourage sync
-        mp.registrationManager.edit().apply {
-          setAttribute("bu_migration_ts", System.currentTimeMillis().toString())
-          commit()
+        // Ensure we always create a state transition that triggers a server registration.
+        fun issueDisableSequence() {
+          disableIssuedAt = SystemClock.elapsedRealtime()
+          // Intentionally clear token first so the old BU receives a registration that removes the subscription.
+          try {
+            if (!savedToken.isNullOrBlank()) {
+              Log.d(TAG, "Clearing existing push token before disable to force unsubscribe on old BU")
+              mp.pushMessageManager.setPushToken("")
+            }
+          } catch (ex: Throwable) {
+            Log.w(TAG, "Failed clearing token prior to disable: ${ex.message}")
+          }
+          mp.pushMessageManager.disablePush()
+          mp.registrationManager.edit().apply {
+            setAttribute("bu_migration_ts", System.currentTimeMillis().toString())
+            commit()
+          }
+          Log.d(TAG, "Issued disablePush (after token clear); added bu_migration_ts attribute to force registration update")
         }
-        Log.d(TAG, "Issued disablePush; added bu_migration_ts attribute to force registration update")
-
-        // If push already disabled, fast-path after small delay
         if (!mp.pushMessageManager.isPushEnabled) {
-          Log.d(TAG, "Push already disabled; fast-path reconfigure in 400ms")
-          handler.postDelayed({ reconfigureAndRestore(true) }, 400)
+          // Force a toggle to guarantee an opt-out registration (old BU may still consider device opted-in)
+            Log.d(TAG, "Push already disabled at start; toggling enable->disable to force opt-out registration")
+            try { mp.pushMessageManager.enablePush() } catch (_: Throwable) {}
+            handler.postDelayed({ issueDisableSequence() }, 300)
+        } else {
+          issueDisableSequence()
         }
 
         // Retry disabling push a few times if still enabled (some devices/ROMs lag)
@@ -469,23 +501,42 @@ class ExpoMarketingCloudSdkModule : Module() {
         handler.postDelayed(reDisableRunnable!!, REDISABLE_RETRY_MS)
 
         // Poll fallback every 2s in case registration event not received
-  pollRunnable = object: Runnable {
+    pollRunnable = object: Runnable {
           override fun run() {
-            if (completed) return
             SFMCSdk.requestSdk { sdk -> sdk.mp { innerMp ->
-              if (!innerMp.pushMessageManager.isPushEnabled && !completed) {
-    Log.d(TAG, "Poll: detected push disabled -> reconfigure")
-    reconfigureAndRestore(true)
-              } else if (!startedReconfigure) {
-    handler.postDelayed(this, POLL_INTERVAL_MS)
+      if (!innerMp.pushMessageManager.isPushEnabled && gotRegistrationAfterDisable) {
+                val elapsed = SystemClock.elapsedRealtime() - disableIssuedAt
+                val remaining = MIN_DISABLE_SETTLE_MS - elapsed
+                if (remaining > 0) {
+                  Log.d(TAG, "Poll: detected push disabled; reconfigure after settle remaining=${remaining}ms")
+                  handler.postDelayed({ reconfigureAndRestore(true) }, remaining)
+                } else {
+                  Log.d(TAG, "Poll: detected push disabled -> reconfigure")
+                  reconfigureAndRestore(true)
+                }
+              } else {
+                handler.postDelayed(this, POLL_INTERVAL_MS)
               }
             } }
           }
         }
-  pollRunnable?.let { handler.postDelayed(it, POLL_INTERVAL_MS) }
+        handler.postDelayed(pollRunnable, POLL_INTERVAL_MS)
 
-  // Force fallback reconfigure after internal FORCE_RECONFIGURE_MS even if push flag never flipped
-  handler.postDelayed({ if (!completed && !startedReconfigure) { Log.d(TAG, "Force fallback reconfigure trigger"); reconfigureAndRestore(true) } }, FORCE_RECONFIGURE_MS.toLong())
+        // Force fallback reconfigure after internal FORCE_RECONFIGURE_MS even if push flag never flipped
+        handler.postDelayed({
+          if (!completed && !startedReconfigure) {
+            if (gotRegistrationAfterDisable) {
+              Log.d(TAG, "Force fallback reconfigure trigger (registration observed)")
+              reconfigureAndRestore(true)
+            } else {
+              Log.d(TAG, "Force fallback reached but no registration event yet; extending wait 3s")
+              handler.postDelayed({ if (!completed && !startedReconfigure) {
+                Log.d(TAG, "Extended fallback reconfigure now executing (registrationObserved=$gotRegistrationAfterDisable)")
+                reconfigureAndRestore(true)
+              } }, 3000)
+            }
+          }
+        }, FORCE_RECONFIGURE_MS.toLong())
 
         // Schedule timeout
     timeoutRunnable = Runnable {
