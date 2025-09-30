@@ -1,3 +1,4 @@
+import { EventSubscription } from 'expo-notifications';
 import ExpoMarketingCloudSdkModule from './ExpoMarketingCloudSdkModule';
 import { InboxResponsePayload, LogEventPayload, InboxMessage, RegistrationResponseSucceededPayload } from './ExpoMarketingCloudSdk.types';
 
@@ -138,16 +139,16 @@ export async function disableAnalytics(): Promise<boolean> {
   return await ExpoMarketingCloudSdkModule.disableAnalytics();
 }
 
-export function addLogListener(listener: (event: LogEventPayload) => void) {
+export function addLogListener(listener: (event: LogEventPayload) => void): EventSubscription {
   return ExpoMarketingCloudSdkModule.addListener('onLog', listener);
 }
 
-export function addInboxResponseListener(listener: (event: InboxResponsePayload) => void) {
-  return ExpoMarketingCloudSdkModule.addListener('onInboxResponse', listener)
+export function addInboxResponseListener(listener: (event: InboxResponsePayload) => void): EventSubscription {
+  return ExpoMarketingCloudSdkModule.addListener('onInboxResponse', listener);
 }
 
-export function addRegistrationResponseSucceededListener(listener: (event: RegistrationResponseSucceededPayload) => void) {
-  return ExpoMarketingCloudSdkModule.addListener('onRegistrationResponseSucceeded', listener)
+export function addRegistrationResponseSucceededListener(listener: (event: RegistrationResponseSucceededPayload) => void): EventSubscription {
+  return ExpoMarketingCloudSdkModule.addListener('onRegistrationResponseSucceeded', listener);
 }
 
 export { LogEventPayload, InboxResponsePayload, InboxMessage, RegistrationResponseSucceededPayload }
