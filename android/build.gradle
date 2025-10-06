@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'host.exp.exponent:expo.modules.notifications:0.32.11'
+  implementation 'host.exp.exponent:expo.modules.notifications:[0.32.12,)'
   implementation 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
   api "com.salesforce.marketingcloud:marketingcloudsdk:9.0.2"
