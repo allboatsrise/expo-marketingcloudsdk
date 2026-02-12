@@ -51,12 +51,12 @@
     "expo-notifications": "^0.32.12",
     "expo": "^54.0.10",
     "react-native": "0.81.4",
-    "zod": "~3.15.0"
+    "zod": "~4.1.12"
   },
   "peerDependencies": {
     "expo": ">=54.0.10",
     "expo-notifications": ">=0.32.12",
-    "zod": "^3.15.0"
+    "zod": "^4.1.12"
   },
   "peerDependenciesMeta": {
     "expo": {
