@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'EXNotifications'
+  s.dependency 'ExpoNotifications'
   s.dependency 'MarketingCloudSDK', '9.0.3'
   s.dependency 'MarketingCloud-SFMCSdk', '2.0.2'
 
