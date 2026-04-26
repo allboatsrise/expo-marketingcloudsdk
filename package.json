@@ -1,7 +1,7 @@
 {
   "name": "@allboatsrise/expo-marketingcloudsdk",
   "author": "All Boats Rise Inc.",
-  "version": "54.0.1",
+  "version": "55.0.0",
   "license": "MIT",
   "description": "Expo module for Salesforce Marketing Cloud SDK",
   "homepage": "https://github.com/allboatsrise/expo-marketingcloudsdk",
@@ -47,15 +47,15 @@
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.1.0",
-    "expo-module-scripts": "^5.0.7",
-    "expo-notifications": "^0.32.12",
-    "expo": "^54.0.10",
-    "react-native": "0.81.4",
+    "expo": "^55.0.16",
+    "expo-module-scripts": "^55.0.2",
+    "expo-notifications": "^55.0.20",
+    "react-native": "0.82.1",
     "zod": "~3.15.0"
   },
   "peerDependencies": {
-    "expo": ">=54.0.10",
-    "expo-notifications": ">=0.32.12",
+    "expo": ">=55.0.16",
+    "expo-notifications": ">=55.0.20",
     "zod": "^3.15.0"
   },
   "peerDependenciesMeta": {
