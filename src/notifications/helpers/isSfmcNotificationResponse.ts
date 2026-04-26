@@ -9,7 +9,7 @@ import {
 export const isSfmcAndroidNotificationResponse = (
   notificationResponse: NotificationResponse
 ): notificationResponse is SfmcAndroidNotificationResponse => {
-  const payload: unknown = notificationResponse.notification.request.content.data.payload
+  const payload: unknown = notificationResponse.notification.request.content.data?.payload
   return isSfmcNotificationResponseBasePayload(payload)
 }
 
