@@ -10,21 +10,23 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
-  s.swift_version  = '5.4'
+  s.platforms      = {
+    :ios => '15.1',
+    :tvos => '15.1'
+  }
+  s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/allboatsrise/expo-marketingcloudsdk' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'EXNotifications'
+  s.dependency 'ExpoNotifications'
   s.dependency 'MarketingCloudSDK', '9.0.3'
   s.dependency 'MarketingCloud-SFMCSdk', '2.0.2'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
   
-  s.source_files = "**/*.{h,m,swift}"
+  s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
 end

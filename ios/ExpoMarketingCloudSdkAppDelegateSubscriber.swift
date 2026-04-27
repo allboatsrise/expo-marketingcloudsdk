@@ -1,5 +1,5 @@
 import ExpoModulesCore
-import EXNotifications
+import ExpoNotifications
 import SFMCSDK
 import MarketingCloudSDK
 
