@@ -66,6 +66,7 @@ class ExpoMarketingCloudSdkApplicationLifecycleListener : ApplicationLifecycleLi
                   context,
                   Random.Default.nextInt(),
                   context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                    putExtra("google.message_id", notificationMessage.id)
                     putExtra("alert", notificationMessage.alert)
                     putExtra("custom", notificationMessage.custom)
                     putExtra("customKeys", HashMap(notificationMessage.customKeys))
