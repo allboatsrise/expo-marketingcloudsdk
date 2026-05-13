@@ -44,6 +44,25 @@ export type InboxResponsePayload = {
   messages: InboxMessage[]
 }
 
+export type BuConfig = {
+  appId: string;
+	accessToken: string;
+	serverUrl: string;
+	mid?: string;
+}
+
+export type BuMigrationResponse = {
+  success: boolean;
+	newAppId: string;
+	carried: {
+		contactKey: string | null | undefined;
+		attributeCount: number;
+		tagCount: number;
+		tokenCarried: boolean;
+	};
+	isPushEnabled: boolean;
+}
+
 export type RegistrationResponseSucceededPayload = {
   response: {
     "quietPushEnabled" : boolean,

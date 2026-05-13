@@ -146,6 +146,39 @@ Various functions, their parameters, return values, and their specific purposes 
 | `isSfmcNotificationResponse` | Check if a notification response `NotificationResponse` originated from SFMC. |
 | `extractPayloadFromSfmcNotificationResponse` | Extract payload info from SFMC notification reponse. |
 | `useLastSfmcNotificationResponse` | A React hook that always returns the SFMC notification response that was received most recently. |
+| `migrateBu` | Migrates the SDK to a new Business Unit config at runtime while attempting to carry over existing state (contact key, attributes, tags, push token & enabled flag). Returns a `BuMigrationResponse`. |
+| `getStoredBu` | Returns the last stored Business Unit override (`BuConfig`) or `null` if none. The `serverUrl` is normalized to include a trailing `/`. |
+| `clearStoredBu` | Clears any stored Business Unit override so that the next app start uses the static plugin configuration. |
+
+### Business Unit (BU) Migration
+
+Use `migrateBu({ appId, accessToken, serverUrl, mid? })` to switch the SDK to a different Business Unit at runtime. The operation:
+
+* Temporarily disables push (to force a registration cycle) before reconfiguring.
+* Reconfigures the native SDK with the new credentials.
+* Restores carried state: contact key, profile attributes, tags, push token & push enabled state (if previously enabled).
+* Persists the new BU so it is reused on next launch (`getStoredBu`).
+
+`BuMigrationResponse` shape:
+
+```
+{
+  success: boolean;
+  newAppId: string; // the appId provided
+  carried: {
+    contactKey: string | null | undefined;
+    attributeCount: number; // number of attributes carried over
+    tagCount: number;       // number of tags carried over
+    tokenCarried: boolean;  // true if the push token was successfully restored
+  };
+  isPushEnabled: boolean;   // final push enabled state after migration
+}
+```
+
+Notes:
+* `serverUrl` is always stored & returned with a trailing `/`.
+* Call `clearStoredBu()` to revert to the static plugin configuration (e.g., for sign-out flows).
+* If migration times out internally, it rejects with an `ERR_MIGRATION_TIMEOUT` error code.
 
 
 ## Add event listener

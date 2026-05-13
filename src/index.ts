@@ -1,6 +1,6 @@
 import { EventSubscription } from 'expo-notifications';
 import ExpoMarketingCloudSdkModule from './ExpoMarketingCloudSdkModule';
-import { InboxResponsePayload, LogEventPayload, InboxMessage, RegistrationResponseSucceededPayload } from './ExpoMarketingCloudSdk.types';
+import { InboxResponsePayload, LogEventPayload, InboxMessage, RegistrationResponseSucceededPayload, BuConfig, BuMigrationResponse } from './ExpoMarketingCloudSdk.types';
 
 export { isSfmcNotificationResponse } from './notifications/helpers/isSfmcNotificationResponse'
 export { extractPayloadFromSfmcNotificationResponse } from './notifications/helpers/extractPayloadFromSfmcNotificationResponse'
@@ -151,4 +151,16 @@ export function addRegistrationResponseSucceededListener(listener: (event: Regis
   return ExpoMarketingCloudSdkModule.addListener('onRegistrationResponseSucceeded', listener);
 }
 
-export { LogEventPayload, InboxResponsePayload, InboxMessage, RegistrationResponseSucceededPayload }
+export function migrateBu(config: BuConfig): Promise<BuMigrationResponse> {
+  return ExpoMarketingCloudSdkModule.migrateBu(config);
+}
+
+export function getStoredBu(): Promise<BuConfig | null> {
+  return ExpoMarketingCloudSdkModule.getStoredBu();
+}
+
+export function clearStoredBu(): Promise<boolean> {
+  return ExpoMarketingCloudSdkModule.clearStoredBu();
+}
+
+export { LogEventPayload, InboxResponsePayload, InboxMessage, RegistrationResponseSucceededPayload, BuConfig, BuMigrationResponse }
