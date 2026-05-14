@@ -37,7 +37,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module prepare && cp -a plugin/src/support/extension-files plugin/build/support/extension-files",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },

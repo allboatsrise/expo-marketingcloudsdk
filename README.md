@@ -108,6 +108,9 @@ export const App: React.FC = () => {
 | `delayRegistrationUntilContactKeyIsSet`       | boolean | No       | Sets the configuration value which enables or disables application control over delaying SDK registration until a contact key is set                |
 | `markNotificationReadOnInboxNotificationOpen` | boolean | No       | Sets the configuration value which enables or disables marking inbox notifications as read on open                                   |
 | `debug`                                       | boolean | No       | Enable logging debug messages                                                                                                                       |
+| `shouldCreateServiceExtension`                | boolean | No       | Creates the notification service extension to enable rich push notifications for iOS                                                                |
+| `iosNseBundleIdSuffix`                        | string  | No       | Sets the suffix of the notification service extension ios bundleId                                                                                  |
+| `iosDevTeamId`                                | string  | No*      | This is the Team ID on developer.apple.com. It is used to sign the bundle. Required if creating an extension                                |
 
 # Usage
 

@@ -53,4 +53,19 @@ export const MarketingCloudSDKPluginPropsSchema = z.object({
   delayRegistrationUntilContactKeyIsSet: z.boolean().optional().default(false),
 
   markNotificationReadOnInboxNotificationOpen: z.boolean().optional().default(false),
+
+  /**
+   * Makes an iOS Notification Service extension to enable rich media push notificaitons.
+   */
+  shouldCreateServiceExtension: z.boolean().optional().default(false),
+
+  /**
+     * Sets the value of the ios notification service extension (NSE). This is appened to the bundle identifier of the app. If not set the default value is `NotificationService`.
+     */
+  iosNseBundleIdSuffix: z.string().min(1).optional().default('NotificationService'),
+
+  /**
+   * Sets the value of the ios notification service extension (NSE) target dev team. Requered if `shouldCreateServiceExtension` is true.
+   */
+  iosDevTeamId: z.string().min(1).optional(),
 }, {required_error: 'Must configure plugin options.'})
