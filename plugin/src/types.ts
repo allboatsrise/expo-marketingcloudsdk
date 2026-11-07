@@ -5,13 +5,13 @@ export type MarketingCloudSdkPluginValidProps = z.output<typeof MarketingCloudSD
 
 export const MarketingCloudSDKPluginPropsSchema = z.object({
   /** Marketing Cloud app id */
-  appId: z.string({required_error: 'Must provide app id.'}).min(1),
+  appId: z.string({error: 'Must provide app id.'}).min(1),
 
   /** Marketing Cloud access token */
-  accessToken: z.string({required_error: 'Must provide access token.'}).min(1),
+  accessToken: z.string({error: 'Must provide access token.'}).min(1),
 
   /** Marketing Cloud server url */
-  serverUrl: z.string({required_error: 'Must provide server url.'}).url({message: 'Invalid server url.'}),
+  serverUrl: z.string({error: 'Must provide server url.'}).url({error: 'Invalid server url.'}),
 
   /** Enable logging debug messages */
   debug: z.boolean().optional().default(false),
@@ -53,4 +53,4 @@ export const MarketingCloudSDKPluginPropsSchema = z.object({
   delayRegistrationUntilContactKeyIsSet: z.boolean().optional().default(false),
 
   markNotificationReadOnInboxNotificationOpen: z.boolean().optional().default(false),
-}, {required_error: 'Must configure plugin options.'})
+}, {error: 'Must configure plugin options.'})
